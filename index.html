@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.min.css">
 	<title>Demo</title>
 	
 	<style type="text/css">
@@ -8,9 +11,27 @@
 	</style>
 </head>
 <body>
-<p>Drag the objects</p>
-<canvas id="demoCanvas" width="640" height="480"></canvas>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<p>Drag the objects</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<canvas id="demoCanvas" width="960px" height="600px"></canvas>
+			</div>
+		</div>
+
+	</div>
+
+
+<!-- Scripts -->
 <script type="text/javascript" src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
-<script type="text/javascript" src="script.js"></script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/loader.js"></script>
+<script type="text/javascript" src="js/artefact.js"></script>
+<!-- <script type="text/javascript" src="script.js"></script> -->
 </body>
 </html>
