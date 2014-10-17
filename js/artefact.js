@@ -1,10 +1,12 @@
 //;(function($,window){
 
 	/**
-
-
-	*/
-	var Artefact = function(title, createdBy, usedBy)
+     *	Describes artefact item
+	 *	@title
+	 *	@createdBy
+	 *	@usedBy
+	 */
+	var Artefact = function(title, createdBy, usedBy, options)
 	{
 		var 
 			_self = new createjs.Container(), 
@@ -22,6 +24,11 @@
 					width: 100, 
 					height: 50
 				}
+			},
+			label = new createjs.Text(title, _options.label.font, _options.label.color),
+			setText = function(title)
+			{
+				label.text = title;
 			},
 			doDragging = function(evt)
 		    {
@@ -54,7 +61,7 @@
 			render = function()
 			{
 				var box = new createjs.Shape(),
-					label = new createjs.Text(title, _options.label.font, _options.label.color),
+					
 					i = 0,
 					boxTopOffset = 0;
 				
@@ -104,11 +111,12 @@
 				box.graphics.beginFill(_options.box.color);
 				box.graphics.drawRoundRect(0,boxTopOffset,_options.box.width,_options.box.height , 5);
 				
-	
+				_self.setText = setText;
 				_self.addChild(box);
 				_self.addChild(label);
 
 			};
+
 		render();
 		setupEvents();
 		return _self;

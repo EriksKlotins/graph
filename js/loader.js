@@ -37,7 +37,8 @@
 				b.x = 300;
 				b.y = 200;
 
-				a.on('dragging',function(e){ stage.update();});
+
+				a.on('dragging',function(e){ a.setText(a.x+', '+a.y);  stage.update();});
 				b.on('dragging',function(e){ stage.update();});
 				stage.addChild(a);
 				stage.addChild(b);
