@@ -29,7 +29,7 @@
         line.lineTo(two.x,two.y);
        
         var shape = new createjs.Shape(line);
-         shape.one = one;
+        shape.one = one;
         shape.two = two;
         stage.addChildAt(shape,0);
         return shape;
@@ -60,7 +60,7 @@
         
         tmp.x = (stage.canvas.width-50) * Math.random() + 25;
         tmp.y = (stage.canvas.height-50) * Math.random() + 25;
-        console.log(tmp.x, tmp.y, colors[ i % colors.length  ]);
+        //console.log(tmp.x, tmp.y, colors[ i % colors.length  ]);
 
         for (var j=0;j<i;j++)
         {

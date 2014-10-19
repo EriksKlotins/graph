@@ -7,11 +7,11 @@ var Bubble = function(abbr, title)
 		_options = {
 			label:{
 					font: '10px arial', 
-					color: 'yellow'
+					color: 'black'
 				},
 			bubble:
 			{
-				color: 'red',
+				color: 'lightblue',
 				radius : 15
 			}
 		},
