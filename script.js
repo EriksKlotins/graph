@@ -16,10 +16,12 @@
         }
         stage.update();
     };
+    
     var endDragging = function(evt)
     {
         // do nothing..
     };
+
     var connectTwo = function (one, two)
     {
         var line = new createjs.Graphics();
@@ -34,8 +36,6 @@
         stage.addChildAt(shape,0);
         return shape;
     };
-
-
 
     for (var i=0;i<10; i++)
     {
@@ -71,7 +71,5 @@
         }
         stage.addChild(tmp);
     }
-    
-   
 
     stage.update();

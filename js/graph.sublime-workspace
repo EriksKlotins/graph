@@ -1,0 +1,664 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"conn",
+				"connector"
+			],
+			[
+				"on",
+				"onMouseMove"
+			],
+			[
+				"re",
+				"requestRedraw"
+			],
+			[
+				"_sta",
+				"_stageX"
+			],
+			[
+				"sta",
+				"_stageX"
+			],
+			[
+				"e",
+				"event"
+			],
+			[
+				"_t",
+				"_stageY"
+			],
+			[
+				"ad",
+				"addChild"
+			],
+			[
+				"st",
+				"stageX"
+			],
+			[
+				"cre",
+				"createConnector"
+			],
+			[
+				"do",
+				"doConnect"
+			],
+			[
+				"add",
+				"addChild"
+			],
+			[
+				"co",
+				"color"
+			],
+			[
+				"_",
+				"_options"
+			],
+			[
+				"c",
+				"createjs"
+			],
+			[
+				"bo",
+				"box"
+			],
+			[
+				"con",
+				"Container"
+			],
+			[
+				"bu",
+				"buttonLabel"
+			],
+			[
+				"a",
+				"angle"
+			],
+			[
+				"cone",
+				"Connector"
+			],
+			[
+				"box",
+				"boxCenterY"
+			],
+			[
+				"new",
+				"newY"
+			],
+			[
+				"g",
+				"graphics"
+			],
+			[
+				"get",
+				"getConnectionPoint"
+			],
+			[
+				"w",
+				"width"
+			],
+			[
+				"b",
+				"box"
+			],
+			[
+				"fu",
+				"function"
+			],
+			[
+				"_dra",
+				"_dragDeltaY"
+			],
+			[
+				"t",
+				"target"
+			],
+			[
+				"te",
+				"textColor"
+			],
+			[
+				"sour",
+				"source"
+			],
+			[
+				"sou",
+				"source"
+			],
+			[
+				"max-",
+				"max-width"
+			],
+			[
+				"min",
+				"min-width"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": ";(function($,window){\n\n\n	var MouseObject = function(stage)\n	{	\n		var \n			_stageX = 0, _stageY = 0,\n			getConnectionPoint = function(event)\n			{ \n				return {x:_stageX, y:_stageY}; \n			},\n			onMouseOver = function(event)\n			{\n				_stageX = event.stageX;\n				_stageY = event.stageY;\n			//	console.log(_stageX, _stageX);\n			},\n			initialize = function()\n			{\n				stage.on('stagemousemove', onMouseOver);\n			};\n			this.getConnectionPoint = getConnectionPoint;\n		initialize();\n	};\n\n\n	var ConnectorFactory = function(source, mouse, stage)\n	{\n		var \n			connector = new Connector(source,  mouse),\n			onMouseMove = function(e)\n			{\n				source.requestRedraw();\n			},\n			onMouseDown = function(e)\n			{\n				console.log('down',e);\n				stage.off(onMouseMove);\n				stage.removeChild(connector);\n			},\n			\n			stage.addChild(connector);\n			stage.on('stagemousemove', onMouseMove);\n			stage.on('stagemousedown', onMouseDown);\n	};\n	var GraphCanvas = function(container)\n	{\n\n		var \n			stage = new createjs.Stage(container),\n			mouse = new MouseObject (stage),\n			\n			addNewBox = function()\n			{\n				var a = new Artefact('This is box',[],[]);\n				a.x=100;\n				a.y = 100;\n				stage.addChild(a);\n				a.on('needRedraw',function(e){ stage.update();});\n				stage.update();\n			},\n\n			createConnector = function(event)\n			{\n				\n				new ConnectorFactory(event.target, mouse, stage);\n			},\n			initialize = function()\n			{\n\n				var a = new Artefact(\n					'Requirements specification document',\n					[\n						new Bubble('ekx',''), \n						new Bubble('mun','' )\n					],\n					[\n						new Bubble('tgo')\n					]);\n				a.x = 100;\n				a.y = 200;\n\n				var b = new Artefact(\n					'Some other thing document',\n					[\n						new Bubble('ekx',''), \n						\n					],\n					[\n						new Bubble('tgo'),new Bubble('mun','' ),\n						new Bubble('ekx',''), \n						new Bubble('mun','' ),\n						new Bubble('ekx',''), \n						new Bubble('mun','' )\n					]);\n\n				var d = new Artefact('Bomba',[],[]);\n				d.x = 400;\n				d.y = 400;\n				b.x = 300;\n				b.y = 200;\n				var c1 = new Connector(a,b);\n				var c2 = new Connector(a,d);\n\n				\n				a.on('needRedraw',function(e){ stage.update();});\n				a.on('newConnector', createConnector);\n				b.on('needRedraw',function(e){ stage.update();});\n				d.on('needRedraw',function(e){ stage.update();});\n				\n				stage.addChildAt(c1,0);\n				stage.addChildAt(c2,0);\n				stage.addChildAt(a,1);\n				stage.addChildAt(b,1);\n				stage.addChildAt(d,0);\n				\n\n\n\n\n\n				$('#add-new').on('click', addNewBox);\n				stage.enableMouseOver(30);\n\n				\n				stage.update();\n			};\n\n		initialize();\n	};\n\n\n\n	$(document).ready(function(){\n		var canvas = new GraphCanvas(document.getElementById('demoCanvas'));\n	});\n	\n\n})(jQuery,window);",
+			"file": "loader.js",
+			"file_size": 2680,
+			"file_write_time": 130584605070000000,
+			"settings":
+			{
+				"buffer_size": 2684,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "//;(function($,window){\n\n	/**\n     *	Describes artefact item\n	 *	@title\n	 *	@createdBy\n	 *	@usedBy\n	 */\n	var Artefact = function(title, createdBy, usedBy, options)\n	{\n		var \n			_self = new createjs.Container(), \n			_isDragging = false,\n			_dragDeltaX = 0,\n			_dragDeltaY = 0,\n			_boxTopOffset = 0,\n			_options = {\n				label:{\n					font: '12px arial', \n					color: 'black'\n				}, \n				box: \n				{\n					color: 'pink', \n					width: 100, \n					height: 60\n				}\n			},\n			box = new createjs.Shape(),\n			menu = new createjs.Container(),\n			label = new createjs.Text(title, _options.label.font, _options.label.color),\n			requestRedraw = function()\n			{\n				var event = new createjs.Event(\"needRedraw\");\n		      	event.target = _self;\n		      \n		      	_self.dispatchEvent(event);\n			},\n			setText = function(title)\n			{\n				label.text = title;\n			},\n			doDragging = function(evt)\n		    {\n		    	var obj = evt.currentTarget;\n		    	if (!_isDragging)\n		    	{\n		    		_dragDeltaX = evt.currentTarget.x - evt.stageX;\n		    		_dragDeltaY = evt.currentTarget.y - evt.stageY;\n		    	}\n		        evt.currentTarget.x = evt.stageX+ _dragDeltaX;\n		        evt.currentTarget.y = evt.stageY+_dragDeltaY;\n		   		_isDragging = true;\n\n		      	requestRedraw();\n\n\n		      	// return false;\n		    },\n		    endDragging = function(event)\n		    {\n		        // do nothing..\n		        _isDragging = false;\n		    },\n\n		    doConnect = function(event)\n		    {\n		    	var e = new createjs.Event(\"newConnector\");\n		      	e.target = _self;\n		      	_self.dispatchEvent(e);\n		    },\n		    onMouseOut = function(event)\n		    {\n		    	box.graphics = new createjs.Graphics();\n		    	box.graphics.beginFill(_options.box.color);\n				box.graphics.drawRoundRect(0,_boxTopOffset,_options.box.width,_options.box.height , 5);\n		    	requestRedraw();\n	 		//	console.log('out');\n		    },\n		    onMouseIn = function(event)\n		    {\n		    	box.graphics = new createjs.Graphics();\n		    	box.graphics.beginFill('red');\n				box.graphics.drawRoundRect(0,_boxTopOffset,_options.box.width,_options.box.height , 5);\n		    //	 console.log('in');\n		    	requestRedraw();\n		    },\n			setupEvents = function()\n			{\n				_self.on(\"pressmove\", doDragging);\n        		_self.on(\"pressup\",endDragging);\n        		_self.addEventListener('mouseover', onMouseIn); \n			 	_self.addEventListener('mouseout', onMouseOut);\n			},\n			getConnectionPoint = function(otherEntity)\n			{\n				var \n					boxCenterX = _self.x + _options.box.width/2,\n					boxCenterY = _self.y+_boxTopOffset + _options.box.height/2,\n					line1 = {x0:0, y0:0, x1:0, y1:0};\n\n				if (!!otherEntity)\n				{\n						var o = otherEntity.getConnectionPoint(null);\n						var dx =boxCenterX - o.x;\n						var dy = boxCenterY- o.y;\n						var h = Math.sqrt(dx*dx + dy*dy );\n						var alpha = Math.asin( dy/h); // \n						// get the angles right\n\n						if (dx < 0 && dy > 0) 	alpha = Math.PI - alpha;\n						if (dx <= 0 && dy<= 0) 	alpha = Math.PI - alpha;\n						if (dx > 0 && dy < 0) 	alpha = Math.PI*2 + alpha;\n\n						var deg = alpha/Math.PI * 180;\n\n						// getting angle between  diognals\n\n						var hip = Math.sqrt(Math.pow(_options.box.width/2,2) + Math.pow(_options.box.height/2,2));\n						var dalpha = Math.asin(_options.box.height/2/hip)/Math.PI * 180 ;\n						\n						// //top\n						if ( (deg > 270-  (90-dalpha))&& (deg < 270+  (90-dalpha)))\n						{\n							//if (_isDragging) console.log('top', 90-dalpha);\n							line1 = \n							{\n								x0: _self.x, \n								y0: _self.y + _boxTopOffset + _options.box.height, \n								x1:  _self.x+ _options.box.width,\n								y1: _self.y + _boxTopOffset + _options.box.height\n							};\n						} \n\n\n						//bottom\n						if (deg > 90-  (90-dalpha) && deg <= 90 +  (90-dalpha))\n						{\n							line1 = \n							{\n								x0: _self.x, \n								y0: _self.y + _boxTopOffset , \n								x1:  _self.x+ _options.box.width,\n								y1: _self.y + _boxTopOffset \n							};\n							//if (_isDragging) console.log('bottom',deg > 90-  (90-dalpha) , deg < 90 +  (90-dalpha),line1);\n							\n						} \n						// left\n						if (deg > 180 - dalpha && deg <= 180 + dalpha)\n						{\n							//if (_isDragging) console.log('left');\n							line1 = \n							{\n								x0: _self.x + _options.box.width, \n								y0: _self.y + _boxTopOffset , \n								x1:  _self.x+ _options.box.width,\n								y1: _self.y + _boxTopOffset +  _options.box.height \n							};	\n						}\n						// right\n						if (deg > 360 - dalpha || deg <= dalpha)\n						{\n							//if (_isDragging) console.log('right');\n							line1 = \n							{\n								x0: _self.x, \n								y0: _self.y + _boxTopOffset , \n								x1:  _self.x,\n								y1: _self.y + _boxTopOffset +  _options.box.height \n							};\n						} \n					\n						var line2 = \n						{\n							x0: boxCenterX,\n							y0: boxCenterY,\n							x1: o.x,\n							y1: o.y \n						};\n						var \n							x1 = line1.x0, y1 = line1.y0, x2 = line1.x1, y2 = line1.y1,\n							x3 = line2.x0, y3 = line2.y0, x4 = line2.x1, y4 = line2.y1,\n						 	newX = ((x1*y2 - y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)),\n						 	newY = ((x1*y2 - y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));\n					\n						return {x:newX, y:newY, alpha:alpha};\n				}\n				\n				return  {x:boxCenterX, y:boxCenterY};\n			},\n			render = function()\n			{\n				i = 0;\n				\n\n				// --------- Bubbles -------\n				while (createdBy.length != usedBy.length)\n				{\n					if (createdBy.length < usedBy.length)\n					{\n						createdBy.unshift(null);\n					}\n					else\n					{\n						usedBy.unshift(null);\n					}\n				}\n\n				// -------- bubbles -------\n				for( i=0;i<createdBy.length;i++)\n				{\n					if (createdBy[i])\n					{\n						createdBy[i].x = createdBy[i].options.bubble.radius;\n						createdBy[i].y = createdBy[i].options.bubble.radius*2*(i)+createdBy[i].options.bubble.radius;\n						_self.addChild(createdBy[i]);\n						_boxTopOffset = Math.max(_boxTopOffset, createdBy[i].y + createdBy[i].options.bubble.radius);\n\n					}\n					if (usedBy[i])\n					{\n						usedBy[i].x = _options.box.width- usedBy[i].options.bubble.radius;\n						usedBy[i].y = usedBy[i].options.bubble.radius*2*(i)+usedBy[i].options.bubble.radius;\n						_self.addChild(usedBy[i]);\n						_boxTopOffset = Math.max(_boxTopOffset, usedBy[i].y + usedBy[i].options.bubble.radius);\n					}	\n				}\n				// --------- MENU ----------\n				var menu = new Menu({items:[\n						{title:'Edit', action: function(){console.log('edit');}} ,\n						{title:'Connect', action: doConnect} ]});\n				menu.on('needRedraw',requestRedraw);\n				menu.x =  _options.box.width;\n				menu.y =  _boxTopOffset;\n\n\n				// label\n				label.textAlign = 'center';\n				label.lineWidth = _options.box.width - 10;\n				label.x = _options.box.width / 2 ;\n				label.y = 5 + _boxTopOffset;\n\n				// box \n				box.graphics.beginFill(_options.box.color);\n				box.graphics.drawRoundRect(0,_boxTopOffset,_options.box.width,_options.box.height , 5);\n				_self._options = _options;\n				_self.setText = setText;\n				_self.getConnectionPoint = getConnectionPoint;\n				_self.requestRedraw = requestRedraw;\n				_self.addChild(box);\n				_self.addChild(label);\n				_self.addChild(menu);\n			\n			};\n\n		render();\n		setupEvents();\n		return _self;\n	};\n\n\n\n//})(jQuery,window);",
+			"file": "artefact.js",
+			"file_size": 7162,
+			"file_write_time": 130584594180000000,
+			"settings":
+			{
+				"buffer_size": 7161,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "connector.js",
+			"settings":
+			{
+				"buffer_size": 1986,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "menu.js",
+			"settings":
+			{
+				"buffer_size": 2210,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"setsyn",
+				"Set Syntax: SQL"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Remove Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 467.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/eriksklotins/Documents/web-projects/graph",
+		"/Users/eriksklotins/Documents/web-projects/graph/js"
+	],
+	"file_history":
+	[
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/eriksklotins/Documents/web-projects/graph/js/bubble.js",
+		"/Users/eriksklotins/Documents/web-projects/graph/js/connector.js",
+		"/Users/eriksklotins/Documents/web-projects/graph/script.js",
+		"/Users/eriksklotins/Documents/web-projects/graph/index.html",
+		"/Users/eriksklotins/Documents/web-projects/graph/js/loader.js",
+		"/Users/eriksklotins/Desktop/log.sql",
+		"/Users/eriksklotins/Desktop/results.txt",
+		"/Users/eriksklotins/Documents/web-projects/vw-vh-fix/examples/responsive-grid.html",
+		"/Users/eriksklotins/Documents/web-projects/vw-vh-fix/dev/vwfix.js",
+		"/Users/eriksklotins/Documents/web-projects/vw-vh-fix/dev/testcss2.css",
+		"/Users/eriksklotins/Documents/web-projects/vw-vh-fix/dev/test.css",
+		"/Users/eriksklotins/Documents/web-projects/tests.js",
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/User/JSLint.sublime-settings",
+		"/Users/eriksklotins/Library/Application Support/Sublime Text 3/Packages/JSLint/JSLint.sublime-settings"
+	],
+	"find":
+	{
+		"height": 46.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			");\n",
+			"action",
+			"doConnect",
+			"stage.u",
+			"\\t",
+			"^\\n",
+			"\\t",
+			"^\\n",
+			"\\t",
+			"^\\n",
+			"\\t",
+			"^\\n",
+			"^\\t+",
+			"^[0-9\\.]+ ",
+			"\\.",
+			" [\\w.,\\(\\)-]+",
+			" [\\w.,-]+",
+			" [\\w.,]+",
+			" [\\w]+",
+			"personal",
+			"^\\n",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"^\\n",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"\\n",
+			"^\\n",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"^\\n",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"( )[A-Z]",
+			"^\\n",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"^[0-9\\.]+ ",
+			" [0-9]",
+			"^[^ ]+ ",
+			"^\\n",
+			" ])",
+			"• ",
+			": ",
+			"• ",
+			": ",
+			"\\n",
+			"\\*",
+			"*",
+			"\\n",
+			"\\[[A-Za-z0-9]+\\] ",
+			"(19|20)[0-9]{2}",
+			"(19|20)[0-9]{2}\n\n\n\n\n",
+			"\\[[0-9l0alo]+\\] ",
+			"^[0-9]+. ",
+			"\\(|\\)",
+			"\\((19|20)[0-9]{2}\\)",
+			"^[0-9]+. ",
+			"^[^,^\\n]+",
+			"^[0-9]+. ",
+			"^[1-9]+. ",
+			"^[^A-Z] ",
+			"^(\"|“)[^”^\"]+",
+			"\"|“",
+			"^(\"|“)[^”^\"]+",
+			"^[^“\"]+",
+			"^\\[[0-9]{1,2}\\] ",
+			" (19|20)[0-9]{2}",
+			"^[0-9]{1,2}. ",
+			" (19|20)[0-9]{2}",
+			"^\\[[0-9]{1,2}\\] ",
+			" (19|20)[0-9]{2}",
+			"^[^.]+. ",
+			"^\\[[0-9]{1,2}\\] ",
+			" (19|20)[0-9]{2}",
+			"(19|20)[0-9]{2}",
+			"^[^.]+. ",
+			"^\\[[0-9]{1,2}\\] ",
+			" (19|20)[0-9]{2}",
+			"(19|20)[0-9]{2}",
+			"^[^.]+. ",
+			"^\\[[0-9]{1,2}\\] ",
+			"^[0-9]{1,2}. ",
+			"\\n",
+			"\\t",
+			"\\n",
+			"\",\\n",
+			"\\t",
+			"\\n",
+			"\\t",
+			"\\n",
+			"Extreme Programming and Agile Processes in Software Engineering-6th International Conference, XP 2005. Sheffield, UK, June 18-23, 2005. Proceedings/ …",
+			"\\n",
+			"(\\s|\\.)$",
+			"^(\\s)",
+			"^(\\[[^]]+\\])+",
+			"^(\\s)",
+			"\\n",
+			"http",
+			"http://ieeexplore.ieee.org",
+			"\\n",
+			"\\",
+			"lessons",
+			"\\n",
+			"^[^A-Z]+",
+			"^[0-9]+\\.",
+			"^[0-9]+\\.\\t",
+			"\"/>\n",
+			"\">\n",
+			"console",
+			"How"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"\\n",
+			"",
+			"\\n",
+			"",
+			"\\t",
+			"",
+			"\\n",
+			"",
+			"\\n",
+			" ",
+			"",
+			"\\n",
+			"",
+			"\\n",
+			"",
+			"\\n",
+			"aaaaa",
+			"",
+			"\\n",
+			"",
+			"\\n",
+			"",
+			"\\t",
+			"",
+			"\\t",
+			" ",
+			"\\n\\*",
+			"\\n*",
+			" ",
+			", ",
+			"",
+			" ",
+			"\\n",
+			" ",
+			"\",\\n\"",
+			"\", \"",
+			"\",\\n",
+			"\", \"",
+			" ",
+			"",
+			" ",
+			"",
+			"',\\n",
+			"',",
+			"'http",
+			"",
+			" ",
+			"",
+			"// console"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "loader.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2684,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								789,
+								789
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "artefact.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7161,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2088,
+								2088
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1085.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "connector.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1986,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1953,
+								1953
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 14.0,
+						"translation.y": 417.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "menu.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2210,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1510,
+								1510
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 525.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 382.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "graph.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

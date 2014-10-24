@@ -1,6 +1,6 @@
 
 
-var Bubble = function(abbr, title)
+var Bubble = function(abbr, title, options)
 {
 	var 
 		_self = new createjs.Container(),
@@ -11,14 +11,16 @@ var Bubble = function(abbr, title)
 				},
 			bubble:
 			{
-				color: 'lightblue',
+				color: '#fcd905',
+				borderColor:'white',
+				borderWidth: 3,
 				radius : 15
 			}
 		},
 		render = function()
 		{
 			var bubble = new createjs.Shape();
-			bubble.graphics.beginFill(_options.bubble.color);
+			bubble.graphics.beginFill(_options.bubble.color).setStrokeStyle(_options.bubble.borderWidth).beginStroke(_options.bubble.borderColor);
 			bubble.graphics.drawCircle(0, 0, _options.bubble.radius);
 			
 			var label = new createjs.Text(abbr, _options.label.font, _options.label.color);
@@ -29,6 +31,7 @@ var Bubble = function(abbr, title)
 			_self.addChild(bubble);
 			_self.addChild(label);
 		};
+
 	render();
 	_self.options = _options;
 	return _self;
