@@ -31,8 +31,13 @@
 				}
 			},
 			box = new createjs.Shape(),
-			menu,
+			connectionPointsOverlay = new createjs.Shape(),
+			deleteButtonOverlay = new createjs.Shape(),
 			label = new createjs.Text(title, _options.label.font, _options.label.color),
+			serialize = function()
+			{
+				return {className: 'Document', x: _self.x, y:_self.y,_options:_options, title: title, createdBy : createdBy, usedBy : usedBy, options:options};
+			},
 			requestRedraw = function()
 			{
 				var event = new createjs.Event("needRedraw");
@@ -85,7 +90,7 @@
 		        evt.currentTarget.x = evt.stageX+ _dragDeltaX;
 		        evt.currentTarget.y = evt.stageY+_dragDeltaY;
 		   		_isDragging = true;
-
+		   		connectionPointsOverlay.visible = false;
 		      	requestRedraw();
 
 
@@ -107,23 +112,32 @@
 
 		    onMouseOut = function(event)
 		    {
-		    	console.log('Artefact.onMouseOut');
+		    	//console.log('Artefact.onMouseOut');
 		    	box.graphics = drawBox();
-		    	menu.visible = false;
+		    	connectionPointsOverlay.visible = false;
+		    	deleteButtonOverlay.visible = false;
 		    	requestRedraw();
-	 		//	console.log('out');
+	 		//	
 		    },
 		    onMouseIn = function(event)
 		    {
-		    	console.log('Artefact.onMouseIn');
+		    //	console.log('Artefact.onMouseIn');
 		    	box.graphics = drawBox(true);
-		    	menu.visible = true;
+
+		    	var obj = window.Mouse.getDragObject();
+		    	if (obj.className === null )
+		    	{
+					connectionPointsOverlay.visible = true;
+					deleteButtonOverlay.visible = true;
+		    	}
+
+		    	
 		    	requestRedraw();
 		    },
 
 		    onDrop = function(event)
     		{
-    			console.log('Artefact.onDrop', _isDragging);
+    			//console.log('Artefact.onDrop', _isDragging);
     			if (_isDragging)
     			{
     				endDragging();
@@ -143,6 +157,15 @@
     			
     			
 
+    		},
+    		doRemove = function()
+    		{
+    			if (confirm('Really delete "'+title+'"?'))
+    			{
+    				var e = new createjs.Event("remove");
+			      	e.target = _self;
+			      	_self.dispatchEvent(e);
+    			}
     		},
     		randomizeBubbles = function()
     		{
@@ -172,151 +195,35 @@
 			{
 				_self.on("pressmove", doDragging);
         		_self.on("pressup",onDrop);	
-        		menu.on('needRedraw',requestRedraw);
-        		_self.addEventListener('mouseover', onMouseIn); 
-			 	_self.addEventListener('mouseout', onMouseOut);
+        		_self .on('mouseover', onMouseIn); 
+			 	_self.on('mouseout', onMouseOut);
+			 	connectionPointsOverlay.on('click',doConnect);
+			 	deleteButtonOverlay.on('click',doRemove);
+				
+			 	box.on('dblclick',function()
+		 		{ 
+		 			var a = prompt('title? ', title); 
+		 			if (a)
+		 			{
+		 				
+			 			setText(a); 
+			 	
+		 				_boxTopOffset = 0;
+		 				render(); 
+		 				requestRedraw();
+			 			
+		 			}
+		 			
+		 		});
 			},
 			
-			
-
-			getConnectionPoint = function(otherEntity)
+			getArtefactBounds = function()
 			{
-				var 
-					boxCenterX = _self.x + _options.box.width/2,
-					boxCenterY = _self.y+_boxTopOffset + _options.box.height/2,
-					line1 = {x0:0, y0:0, x1:0, y1:0},
-					padding = 5;
-
-				if (!!otherEntity)
-				{
-						var o = otherEntity.getConnectionPoint(null);
-						var dx =boxCenterX - o.x;
-						var dy = boxCenterY- o.y;
-						var h = Math.sqrt(dx*dx + dy*dy );
-						var alpha = Math.asin( dy/h); // 
-						// get the angles right
-
-						if (dx < 0 && dy > 0) 	alpha = Math.PI - alpha;
-						if (dx <= 0 && dy<= 0) 	alpha = Math.PI - alpha;
-						if (dx > 0 && dy < 0) 	alpha = Math.PI*2 + alpha;
-
-						var deg = alpha/Math.PI * 180;
-
-						// getting angle between  diognals
-
-						var hip = Math.sqrt(Math.pow(_options.box.width/2,2) + Math.pow(_options.box.height/2,2));
-						var dalpha = Math.asin(_options.box.height/2/hip)/Math.PI * 180 ;
-						var side;
-						// //top
-						if ( (deg > 270-  (90-dalpha))&& (deg < 270+  (90-dalpha)))
-						{
-							//if (_isDragging) console.log('top', 90-dalpha);
-							side = 'top';
-							line1 = 
-							{
-								x0: _self.x, 
-								y0: _self.y + _boxTopOffset + _options.box.height+ padding, 
-								x1:  _self.x+ _options.box.width,
-								y1: _self.y + _boxTopOffset + _options.box.height + padding
-							};
-						} 
-
-						//bottom
-						if (deg > 90-  (90-dalpha) && deg <= 90 +  (90-dalpha))
-						{
-							side = 'bottom';
-							line1 = 
-							{
-								x0: _self.x, 
-								y0: _self.y + _boxTopOffset - padding, 
-								x1:  _self.x+ _options.box.width,
-								y1: _self.y + _boxTopOffset - padding
-							};
-							//if (_isDragging) console.log('bottom',deg > 90-  (90-dalpha) , deg < 90 +  (90-dalpha),line1);
-							
-						} 
-						// left
-						if (deg > 180 - dalpha && deg <= 180 + dalpha)
-						{
-							side = 'left';
-							//if (_isDragging) console.log('left');
-							line1 = 
-							{
-								x0: _self.x + _options.box.width + padding, 
-								y0: _self.y + _boxTopOffset , 
-								x1:  _self.x+ _options.box.width + padding,
-								y1: _self.y + _boxTopOffset +  _options.box.height 
-							};	
-						}
-						// right
-						if (deg > 360 - dalpha || deg <= dalpha)
-						{
-							//if (_isDragging) console.log('right');
-							side = 'right';
-							line1 = 
-							{
-								x0: _self.x - padding, 
-								y0: _self.y + _boxTopOffset , 
-								x1:  _self.x - padding,
-								y1: _self.y + _boxTopOffset +  _options.box.height 
-							};
-						} 
-					
-							// var line2 = 
-							// {
-							// 	x0: boxCenterX,
-							// 	y0: boxCenterY,
-							// 	x1: o.x,
-							// 	y1: o.y 
-							// };
-							// var 
-							// 	x1 = line1.x0, y1 = line1.y0, x2 = line1.x1, y2 = line1.y1,
-							// 	x3 = line2.x0, y3 = line2.y0, x4 = line2.x1, y4 = line2.y1,
-							//  	newX = ((x1*y2 - y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)),
-							//  	newY = ((x1*y2 - y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
-							//return {x:newX, y:newY, alpha:alpha};
-						var result = null;
-
-
-						if (Math.abs(dx) < Math.abs(dy))
-						{
-							if (boxCenterY > o.y)
-							{
-						//	case 'bottom':
-								result = {x: boxCenterX, y: boxCenterY - _options.box.height/2, alpha : Math.PI / 2 };
-						//	break;
-							}
-							else
-							{
-						//	case 'top':
-								result = {x: boxCenterX, y: boxCenterY + _options.box.height/2, alpha : Math.PI*2 / 4*3 };
-						//	break;
-							}
-						}
-						else
-						{
-							if (boxCenterX> o.x)
-							{
-						//	case 'right':
-								result = {x: boxCenterX- _options.box.width/2, y: boxCenterY , alpha : 0};
-						//	break;
-							}
-							else
-							{
-						//	case 'left':
-								result = {x: boxCenterX+ _options.box.width/2, y: boxCenterY, alpha : Math.PI };
-						//	break;
-							}
-						}
-						
-						
-						return result;
-
-						
-					
-				}
-				
-				return  {x:boxCenterX, y:boxCenterY};
+				return {
+					x : _self.x, 
+					y : _self.y + _boxTopOffset, 
+					width : _options.box.width, 
+					height: _options.box.height};
 			},
 
 
@@ -330,8 +237,7 @@
 				_boxTopOffset = 0;
 				// --------- Bubbles -------
 
-				createdBy.unshift(new Bubble('+'));
-				usedBy.unshift(new Bubble('+'));
+				
 				while (createdBy.length != usedBy.length)
 				{
 					if (createdBy.length < usedBy.length)
@@ -344,7 +250,6 @@
 					}
 				}
 
-				// -------- bubbles -------
 				for( i=0;i<createdBy.length;i++)
 				{
 					if (createdBy[i])
@@ -363,15 +268,35 @@
 						_boxTopOffset = Math.max(_boxTopOffset, usedBy[i].y + usedBy[i].options.bubble.radius+usedBy[i].options.bubble.borderWidth);
 					}	
 				}
-				// --------- MENU ----------
-				menu = new Menu({items:[
-						{title:'Edit', action: function(){ var a = prompt('title? '); setText(a); render(); requestRedraw();} } ,
-						{title:'Connect', action: doConnect},
-						{title:'Bubbles', action: randomizeBubbles } ]});
+
+				// -------------------------
+				// connection points
+				var b = getArtefactBounds();
 				
-				menu.x =  0;//_options.box.width;
-				menu.y =  _boxTopOffset;
-				menu.visible = false;
+				connectionPointsOverlay.graphics = new createjs.Graphics();
+				connectionPointsOverlay
+					.graphics.beginFill('white')
+					.beginStroke(_options.box.border)
+					.drawCircle(0,b.height / 2+ _boxTopOffset,10)
+					.endStroke()
+					.beginStroke(_options.box.border)
+					.drawCircle(b.width ,b.height / 2+ _boxTopOffset,10)
+					.endStroke()
+					.beginStroke(_options.box.border)
+					.drawCircle(b.width/2 , _boxTopOffset,10)
+					.endStroke()
+					.beginStroke(_options.box.border)
+					.drawCircle(b.width/2 , _boxTopOffset + b.height,10);
+			
+				deleteButtonOverlay.graphics = new createjs.Graphics();
+				deleteButtonOverlay
+					.graphics.beginFill('red')
+					.beginStroke(_options.box.border)
+					.drawRect( b.width-10, _boxTopOffset,10,10)
+					.endStroke();
+
+				connectionPointsOverlay.visible = false;
+				deleteButtonOverlay.visible = false;
 
 
 				// label
@@ -382,20 +307,25 @@
 
 
 				box.graphics = drawBox();
-				_self._options = _options;
-				_self.setText = setText;
-				_self.getConnectionPoint = getConnectionPoint;
-				_self.requestRedraw = requestRedraw;
-				_self.title = title;
-				_self.addChild(box);
-				_self.addChild(label);
-				_self.addChild(menu);
 				
+				_self.title = title;
+				 _self.addChild(box);
+				 _self.addChild(label);
+				// _self.addChild(menu);
+				_self.addChild(connectionPointsOverlay);
+				_self.addChild(deleteButtonOverlay);
 			
 			};
 
+		randomizeBubbles();
 		render();
 		setupEvents();
+		_self._options = _options;
+		_self.setText = setText;
+		_self.getArtefactBounds = getArtefactBounds;
+		_self.requestRedraw = requestRedraw;
+		_self.serialize = serialize;
+		
 		return _self;
 	};
 

@@ -1,52 +1,7 @@
 ;(function($,window){
 
 
-	var MouseObject = function(stage)
-	{	
-		var 
-			_stageX = 0, 
-			_stageY = 0,
-			_dragging = false,
-			_draggingObject = null,
-			getConnectionPoint = function(event)
-			{ 
-				return {x:_stageX, y:_stageY}; 
-			},
-			onMouseOver = function(event)
-			{
-				_stageX = event.stageX;
-				_stageY = event.stageY;
-				//console.log(_stageX, _stageX, _dragging);
-			},
-			setDragObject = function(obj)
-			{
-				console.log('setDragObject',obj);
-				_draggingObject = obj;
-			},
-			getDragObject = function()
-			{
-				return _draggingObject === null? {className:'null'} : _draggingObject;
-			},
-			onMouseUp = function(event)
-			{
-				// console.log('MouseObject.onMouseUp');
-				// _dragging = false;
-				// _draggingObject=null;
-			},
-			initialize = function()
-			{
-				stage.on('stagemousemove', onMouseOver);
-				stage.on('stagemousedown', function(){_dragging = true;});
-				stage.on('stagemouseup', onMouseUp);
-				stage.enableMouseOver(30);
-			};
-			this.getConnectionPoint = getConnectionPoint;
-			this.setDragObject = setDragObject;
-			this.getDragObject = getDragObject;
-		initialize();
-	};
-
-
+	
 
 	var ConnectorFactory = function(source, mouse, stage)
 	{
@@ -58,29 +13,47 @@
 			},
 			onMouseDown = function(e)
 			{
-				 console.log('down',e);
-				 stage.off(onMouseMove);
+				stage.off('stagemousemove', onMouseMoveEvent);
+				stage.off('stagemousedown', onMouseDownEvent);
 				stage.removeChild(connector);
+				//
+				setTimeout(function(){
+					window.Mouse.setDragObject(null);
+				},500);
+				
+				
+
 				stage.update();
 				//
 			};
-			stage.addChild(connector);
+			stage.addChildAt(connector,0);
 			window.Mouse.setDragObject(connector);
 			connector.on('drop', function(e)
 			{
 				if (source !== e.originalTarget)
 				{
-						var tmp = new Connector(source, e.originalTarget);
+					var tmp = new Connector(source, e.originalTarget);
+					tmp.on('remove', function(e)
+					{
+						stage.removeChild(e.target);
+						stage.update();
+					});
+					tmp.on('needRedraw', function(e)
+					{
+						stage.update();
+					});
 
-					stage.addChild(tmp);
+					stage.addChildAt(tmp,0);
 					stage.update();
 
 					window.Mouse.setDragObject(null);
+					stage.off('stagemousemove', onMouseMoveEvent);
+					stage.off('stagemousedown', onMouseDownEvent);
 				}
 			
 			});
-			stage.on('stagemousemove', onMouseMove);
-			stage.on('stagemousedown', onMouseDown);
+			var onMouseMoveEvent = stage.on('stagemousemove', onMouseMove);
+			var onMouseDownEvent = stage.on('stagemousedown', onMouseDown);
 	};
 	var GraphCanvas = function(container)
 	{
@@ -90,12 +63,17 @@
 			
 			addNewBox = function()
 			{
-				var a = new Artefact('This is box',[],[]);
-				a.x=100;
-				a.y = 100;
+				var a = new Artefact('Document',[],[]);
+				b = a.getArtefactBounds();
+				a.x = container.width / 2 - b.width/2;
+				a.y = container.height / 2 - b.height/2;
 				stage.addChild(a);
 				a.on('needRedraw',function(e){ stage.update();});
 				a.on('newConnector', createConnector);
+				a.on('remove', function(e){
+					stage.removeChild(e.target);
+					stage.update();
+				});
 				stage.update();
 			},
 
@@ -104,19 +82,35 @@
 				
 				new ConnectorFactory(event.target, window.Mouse, stage);
 			},
+			resizeCanvas = function()
+			{
+
+				container.width = $(container).parent().innerWidth();
+		        container.height = $(container).parent().innerHeight();
+		    	stage.update();			
+			},
+			exportToJSON = function()
+			{
+				var result = [];
+				for(var i=0;i<stage.children.length;i++)
+				{
+					result.push(stage.children[i].serialize());
+				}
+
+				console.log(result);
+			},
 			initialize = function()
 			{
 				window.Mouse = new MouseObject(stage);
 
-
+				$(window).resize(resizeCanvas);
 
 				$('#add-new').on('click', addNewBox);
-			
-				// var butt = new ImageButton('img/monkey.png',function(){ console.log('booo');});
-				// stage.addChild(butt);
-				
+				$('#export').on('click', exportToJSON);
 
-				stage.update();
+			
+				resizeCanvas();
+				addNewBox();
 			};
 
 		initialize();
@@ -128,6 +122,8 @@
 		var canvas = new GraphCanvas(document.getElementById('demoCanvas'));
 
 	});
+
+	
 	
 
 })(jQuery,window);

@@ -23,7 +23,10 @@ var Connector = function(from, to)
 				angle:Math.PI/10
 			}
 		},
-
+		serialize = function()
+		{
+			return null;
+		},
 		getAngleBetweenPoints = function(p0, A, B)
 		{
 			
@@ -34,12 +37,75 @@ var Connector = function(from, to)
 
 			return  Math.PI/2 - alpha + Math.PI;
 		},
+		getMidpoint = function(bounds)
+		{
+			return {x : bounds.x + bounds.width / 2, y:bounds.y + bounds.height / 2};
+		},
+		calculateConnectionPoint =  function(from, to )
+		{
+			var fromBounds = from.getArtefactBounds();
+			if (!!to)
+			{
+				// lets see where the other object is..
+				var 
+					toBounds = to.getArtefactBounds(),
+					o = getMidpoint(toBounds),
+					e = getMidpoint(fromBounds),
+					dx = e.x - o.x,
+					dy = e.y- o.y,
+					h = Math.sqrt(dx*dx + dy*dy ),
+					result = null;
+
+
+					if (Math.abs(dx) < Math.abs(dy))
+					{
+						if (e.y > o.y)
+						{
+					//	case 'bottom':
+							result = {x: e.x, y: e.y - fromBounds.height/2, side:'bottom' };
+						}
+						else
+						{
+					//	case 'top':
+							result = {x: e.x, y: e.y + fromBounds.height/2 , side:'top' };
+						}
+					}
+					else
+					{
+						if (e.x> o.x)
+						{
+					//	case 'right':
+							result = {x: e.x- fromBounds.width/2, y: e.y, side:'right'  };
+						}
+						else
+						{
+					//	case 'left':
+							result = {x: e.x+  fromBounds.width/2, y: e.y , side:'left' };
+						}
+					}
+					return result;
+
+			}
+			else
+			{
+				// if nothing is known, return midpoint
+				return getMidpoint(fromBounds);
+			}
+			
+
+
+
+
+
+			
+		},
 		line = function(selected)
 		{
 			var g = new createjs.Graphics(),
-			 	a = from.getConnectionPoint(to),
-			 	b = to.getConnectionPoint(from),
-				d = Math.PI/10;
+			 	a = calculateConnectionPoint(from, to),
+			 	b = calculateConnectionPoint(to,from),// to.getConnectionPoint(from),
+				d = Math.PI/10, qX = 0, qY = 0;
+			
 			g.moveTo(a.x,a.y);
 	      	g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	        g.beginStroke( selected ? _options.selectedColor :  _options.color);
@@ -48,24 +114,34 @@ var Connector = function(from, to)
 	        var deltaX = (b. x - a.x);
 	        var deltaY = (b.y - a.y);
 
-	        var qX = deltaX/4 * ((Math.abs(deltaX) > Math.abs(deltaY)) ?  1 : -1);
-	        var qY = deltaY/4 * ((Math.abs(deltaX) < Math.abs(deltaY)) ?   -1 : 1);
 
+	        if ([ 'top', 'bottom'].indexOf(a.side)>=0)
+	        {
+	        	qX = -deltaX/4;
+	        	qY = +deltaY/4;
+	        }
+	        else
+	        {
+				qX = +deltaX/4;
+	        	qY = -deltaY/4;
+	        }
 
 	        var p1 = {
 	        	x : a.x + deltaX/4 + qX,
-	        	y : a.y + deltaY/4 - qY
+	        	y : a.y + deltaY/4 + qY
 	        };
+	        
+
 	        var p2 = {
 	        	x : b.x - deltaX/4 - qX,
-	        	y : b.y - deltaY/4 + qY
+	        	y : b.y - deltaY/4 - qY
 	        };
 
 	       	g.bezierCurveTo(p1.x,p1.y , p2.x,p2.y,b.x,b.y);
 
 	       	// alphas
-	       	a.alpha = getAngleBetweenPoints(a, deltaX/4 + qX,  deltaY/4 - qY);
-	       	b.alpha = getAngleBetweenPoints(b, - deltaX/4 - qX,- deltaY/4 + qY );
+	       	a.alpha = getAngleBetweenPoints(a, deltaX/4 + qX,  deltaY/4 + qY);
+	       	b.alpha = getAngleBetweenPoints(b, - deltaX/4 - qX,- deltaY/4 - qY );
 
 				        
 	        //g.lineTo(b.x,b.y);
@@ -99,17 +175,42 @@ var Connector = function(from, to)
 			render();
 			
 		},
+		doRemove = function()
+		{
+			var e = new createjs.Event("remove");
+	      	e.target = _self;
+	      	_self.dispatchEvent(e);
+		},
+		requestRedraw = function()
+		{
+			var event = new createjs.Event("needRedraw");
+	      	event.target = _self;
+	      	_self.dispatchEvent(event);
+		},
 		setupEvents = function()
 		{
-			if (from.on) from.on('needRedraw', updateLine);
-			if (to.on) to.on('needRedraw', updateLine);
-			// _self.on('mouseover', function() {
-			// 	_self.set({graphics:line(true)});
-			// });	
-			// _self.on('mouseout', function() {
-			// 	_self.set({graphics:line(false)});
-			// });	
-			// _self.on('click', function(){ console.log('click', _self);});
+			if (from.on)
+			{
+				from.on('needRedraw', updateLine);
+				from.on('remove', doRemove);
+			}
+			if (to.on)
+			{
+				to.on('needRedraw', updateLine);
+				to.on('remove', doRemove);
+			} 
+			_self.on('mouseover', function() 
+			{
+				console.log('con:mouseover');
+				_self.set({graphics:line(true)});
+				requestRedraw();
+			});	
+			_self.on('mouseout', function() 
+			{
+				_self.set({graphics:line(false)});
+				requestRedraw();
+			});	
+			_self.on('click', function(){ console.log('click', _self);});
 		};
 		render();
 		setupEvents();
@@ -118,3 +219,11 @@ var Connector = function(from, to)
 		_self.className = 'Connector';
 		return _self;
 };
+
+
+
+
+
+
+
+
