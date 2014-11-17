@@ -60,15 +60,19 @@
 
 		var 
 			stage = new createjs.Stage(container),
-			
+			doRedraw = function()
+			{
+				//console.log('GraphCanvas.doRedraw()');
+				stage.update();
+			},
 			addNewBox = function()
 			{
-				var a = new Artefact('Document',[],[]);
+				var a = new Artefact({});
 				b = a.getArtefactBounds();
 				a.x = container.width / 2 - b.width/2;
 				a.y = container.height / 2 - b.height/2;
 				stage.addChild(a);
-				a.on('needRedraw',function(e){ stage.update();});
+				a.on('needRedraw',doRedraw);
 				a.on('newConnector', createConnector);
 				a.on('remove', function(e){
 					stage.removeChild(e.target);
@@ -119,6 +123,20 @@
 
 
 	$(document).ready(function(){
+
+		window. roleList = 
+		[
+			
+			new Bubble({title:'Designers', abbr:'D'}),
+			new Bubble({title:'Development', abbr:'DEV'}),
+			new Bubble({title:'Product management', abbr:'PM'}),
+			new Bubble({title:'Simulation', abbr:'S'}),
+			new Bubble({title:'System management', abbr:'SM'}),
+			new Bubble({title:'Software test', abbr:'ST'}),
+			new Bubble({title:'Tester', abbr: 'T'}),
+			new Bubble({title:'Test lead', abbr: 'TL'}),
+			new Bubble({title:'Test team', abbr:'TT'})
+		];
 		var canvas = new GraphCanvas(document.getElementById('demoCanvas'));
 
 	});

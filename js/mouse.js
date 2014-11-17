@@ -1,3 +1,4 @@
+
 var MouseObject = function(stage)
 	{	
 		var 

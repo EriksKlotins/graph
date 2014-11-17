@@ -6,7 +6,7 @@
 	 *	@createdBy
 	 *	@usedBy
 	 */
-	var Artefact = function(title, createdBy, usedBy, options)
+	var Artefact = function(options)
 	{
 		var 
 			_self = new createjs.Container(), 
@@ -14,7 +14,10 @@
 			_dragDeltaX = 0,
 			_dragDeltaY = 0,
 			_boxTopOffset = 0,
+			createdBy = [], 
+			usedBy = [],
 			_options = {
+				title:'Document',
 				label:{
 					font: '16px arial', 
 					color: '#1e376d'
@@ -22,21 +25,27 @@
 				box: 
 				{
 					color: '#fcd905', 
-					selectedColor : '#e17f26',
+					selectedColor : '#fcd905',//'#e17f26',
 					border: '#1e376d',
 					width: 100, 
 					height: 60,
 					minWidth : 100,
 					minHeight : 60
+				},
+				bubble:
+				{
+					radius : 16
 				}
 			},
 			box = new createjs.Shape(),
 			connectionPointsOverlay = new createjs.Shape(),
+			//userBubbleOverlay = new createjs.Container(),
 			deleteButtonOverlay = new createjs.Shape(),
-			label = new createjs.Text(title, _options.label.font, _options.label.color),
+		//	addCreatorBubbleOverlay = new createjs.Container(),
+			label = new createjs.Text(_options.title, _options.label.font, _options.label.color),
 			serialize = function()
 			{
-				return {className: 'Document', x: _self.x, y:_self.y,_options:_options, title: title, createdBy : createdBy, usedBy : usedBy, options:options};
+				return {className: 'Document', x: _self.x, y:_self.y,_options:_options, title: _options.title, createdBy : createdBy, usedBy : usedBy, options:options};
 			},
 			requestRedraw = function()
 			{
@@ -47,7 +56,8 @@
 			},
 			setText = function(newTitle)
 			{
-				title = newTitle;
+			
+				_options.title = newTitle;
 				label.text = newTitle;
 				var bounds = label.getBounds();
 				setSize(bounds.width - bounds.x , bounds.height - bounds.y);
@@ -62,9 +72,6 @@
 			{
 				_options.box.width = Math.max(_options.box.minWidth, width);
 				_options.box.height = Math.max(_options.box.minHeight, height);
-			
-
-
 			},
 
 			drawBox = function(selected)
@@ -90,7 +97,8 @@
 		        evt.currentTarget.x = evt.stageX+ _dragDeltaX;
 		        evt.currentTarget.y = evt.stageY+_dragDeltaY;
 		   		_isDragging = true;
-		   		connectionPointsOverlay.visible = false;
+		   	//	connectionPointsOverlay.visible = false;
+		   		setOverlays(false);
 		      	requestRedraw();
 
 
@@ -114,8 +122,7 @@
 		    {
 		    	//console.log('Artefact.onMouseOut');
 		    	box.graphics = drawBox();
-		    	connectionPointsOverlay.visible = false;
-		    	deleteButtonOverlay.visible = false;
+		    	setOverlays(false);
 		    	requestRedraw();
 	 		//	
 		    },
@@ -127,14 +134,19 @@
 		    	var obj = window.Mouse.getDragObject();
 		    	if (obj.className === null )
 		    	{
-					connectionPointsOverlay.visible = true;
-					deleteButtonOverlay.visible = true;
+					setOverlays(true);
 		    	}
 
 		    	
 		    	requestRedraw();
 		    },
-
+		    setOverlays = function(visible)
+		    {
+		    	connectionPointsOverlay.visible = visible;
+				deleteButtonOverlay.visible = visible;
+			//	addCreatorBubbleOverlay.visible = visible;
+			//	userBubbleOverlay.visible = visible;
+		    },
 		    onDrop = function(event)
     		{
     			//console.log('Artefact.onDrop', _isDragging);
@@ -160,21 +172,22 @@
     		},
     		doRemove = function()
     		{
-    			if (confirm('Really delete "'+title+'"?'))
+    			if (confirm('Really delete "'+_optins.title+'"?'))
     			{
     				var e = new createjs.Event("remove");
 			      	e.target = _self;
 			      	_self.dispatchEvent(e);
     			}
     		},
+    		 randomAbbr = function()
+			{
+				return 	String.fromCharCode( 65 + Math.random()*25 )+
+						String.fromCharCode( 65 + Math.random()*25 )+
+						String.fromCharCode( 65 + Math.random()*25 );
+			},
     		randomizeBubbles = function()
     		{
-    			var randomAbbr = function()
-    			{
-    				return 	String.fromCharCode( 65 + Math.random()*25 )+
-    						String.fromCharCode( 65 + Math.random()*25 )+
-    						String.fromCharCode( 65 + Math.random()*25 );
-    			}, i;
+    			var i;
     			createdBy = [];
     			usedBy = [];
     			for ( i=0;i<Math.random() * 5; i++)
@@ -199,20 +212,22 @@
 			 	_self.on('mouseout', onMouseOut);
 			 	connectionPointsOverlay.on('click',doConnect);
 			 	deleteButtonOverlay.on('click',doRemove);
-				
+
 			 	box.on('dblclick',function()
 		 		{ 
-		 			var a = prompt('title? ', title); 
-		 			if (a)
-		 			{
+		 			var editor = new ArtefactEditor(_self);
+		 			editor.open();
+		 			// var a = prompt('title? ', title); 
+		 			// if (a)
+		 			// {
 		 				
-			 			setText(a); 
+			 		// 	setText(a); 
 			 	
-		 				_boxTopOffset = 0;
-		 				render(); 
-		 				requestRedraw();
+		 			// 	_boxTopOffset = 0;
+		 			// 	render(); 
+		 			// 	requestRedraw();
 			 			
-		 			}
+		 			// }
 		 			
 		 		});
 			},
@@ -225,51 +240,54 @@
 					width : _options.box.width, 
 					height: _options.box.height};
 			},
-
-
-
+			editCreatedBy = function(roles)
+			{
+		
+				
+				createdBy = roles;//.push(new Bubble(randomAbbr(), ''));
+				render();
+				_self.y -= _boxTopOffset;
+				requestRedraw();
+			},
+			editUsedBy = function(roles)
+			{
+				usedBy = roles;//.push(new Bubble(randomAbbr(), ''));
+				render();
+				_self.y -= _boxTopOffset;
+				requestRedraw();
+			},
 			render = function()
 			{
 				i = 0;
 				
 				_self.removeAllChildren();
 				_self.y += _boxTopOffset;
-				_boxTopOffset = 0;
+				label.textAlign = 'center';
+
 				// --------- Bubbles -------
 
+
+				_boxTopOffset = Math.max(createdBy.length, usedBy.length) * _options.bubble.radius*2;
 				
-				while (createdBy.length != usedBy.length)
+				setText(_options.title);
+				for(i=0;i<createdBy.length;i++)
 				{
-					if (createdBy.length < usedBy.length)
-					{
-						createdBy.unshift(null);
-					}
-					else
-					{
-						usedBy.unshift(null);
-					}
+					createdBy[i].x = _options.bubble.radius;
+					createdBy[i].y = _boxTopOffset -2 - (i) * _options.bubble.radius*2 -  _options.bubble.radius;
+					//createdBy[i].render();				
+					_self.addChild(createdBy[i]);	
+					
 				}
 
-				for( i=0;i<createdBy.length;i++)
+				for(i=0;i<usedBy.length;i++)
 				{
-					if (createdBy[i])
-					{
-						createdBy[i].x = createdBy[i].options.bubble.radius;
-						createdBy[i].y = (createdBy[i].options.bubble.radius+createdBy[i].options.bubble.borderWidth)*2*(i)+createdBy[i].options.bubble.radius;
-						_self.addChild(createdBy[i]);
-						_boxTopOffset = Math.max(_boxTopOffset, createdBy[i].y + createdBy[i].options.bubble.radius+createdBy[i].options.bubble.borderWidth);
+					usedBy[i].x = _options.box.width- _options.bubble.radius;
+					usedBy[i].y = _boxTopOffset - 2 - (i) * _options.bubble.radius*2 -  _options.bubble.radius;
+				//	usedBy[i].render();
+					_self.addChild(usedBy[i]);	
 
-					}
-					if (usedBy[i])
-					{
-						usedBy[i].x = _options.box.width- usedBy[i].options.bubble.radius;
-						usedBy[i].y = (usedBy[i].options.bubble.radius+usedBy[i].options.bubble.borderWidth)*2*(i)+usedBy[i].options.bubble.radius;
-						_self.addChild(usedBy[i]);
-						_boxTopOffset = Math.max(_boxTopOffset, usedBy[i].y + usedBy[i].options.bubble.radius+usedBy[i].options.bubble.borderWidth);
-					}	
 				}
 
-				// -------------------------
 				// connection points
 				var b = getArtefactBounds();
 				
@@ -277,16 +295,16 @@
 				connectionPointsOverlay
 					.graphics.beginFill('white')
 					.beginStroke(_options.box.border)
-					.drawCircle(0,b.height / 2+ _boxTopOffset,10)
+					.drawCircle(0,b.height / 2+ _boxTopOffset,7)
 					.endStroke()
 					.beginStroke(_options.box.border)
-					.drawCircle(b.width ,b.height / 2+ _boxTopOffset,10)
+					.drawCircle(b.width ,b.height / 2+ _boxTopOffset,7)
 					.endStroke()
 					.beginStroke(_options.box.border)
-					.drawCircle(b.width/2 , _boxTopOffset,10)
+					.drawCircle(b.width/2 , _boxTopOffset,7)
 					.endStroke()
 					.beginStroke(_options.box.border)
-					.drawCircle(b.width/2 , _boxTopOffset + b.height,10);
+					.drawCircle(b.width/2 , _boxTopOffset + b.height,7);
 			
 				deleteButtonOverlay.graphics = new createjs.Graphics();
 				deleteButtonOverlay
@@ -295,36 +313,57 @@
 					.drawRect( b.width-10, _boxTopOffset,10,10)
 					.endStroke();
 
-				connectionPointsOverlay.visible = false;
-				deleteButtonOverlay.visible = false;
+				// //-- addCreatorBubbleOverlay
+				// addCreatorBubbleOverlay = new Bubble('edit', '',{bubble:{color:'white'}});
+				// addCreatorBubbleOverlay.x = _options.bubble.radius;
+				// addCreatorBubbleOverlay.y = _boxTopOffset - (createdBy.length*0)*2*_options.bubble.radius-2-_options.bubble.radius;
+				// 	addCreatorBubbleOverlay.on('click', editCreatedBy);
+				// //-- userBubbleOverlay
+				// userBubbleOverlay = new Bubble('edit', '',{bubble:{color:'white'}});
+				// userBubbleOverlay.x = _options.box.width- _options.bubble.radius;
+				// userBubbleOverlay.y =  _boxTopOffset - (usedBy.length*0)*2*_options.bubble.radius-2-_options.bubble.radius;
+
+				// userBubbleOverlay.on('click', editUsedBy);
+
+				setOverlays(false);
 
 
-				// label
-				label.textAlign = 'center';
-				setText(title);
+
+				
 
 			
 
 
 				box.graphics = drawBox();
 				
-				_self.title = title;
-				 _self.addChild(box);
-				 _self.addChild(label);
-				// _self.addChild(menu);
-				_self.addChild(connectionPointsOverlay);
-				_self.addChild(deleteButtonOverlay);
+				_self.addChild(
+					box, 
+					label, 
+					connectionPointsOverlay, 
+					deleteButtonOverlay
+					//addCreatorBubbleOverlay,
+					//userBubbleOverlay
+				);
+		
+				
 			
 			};
 
-		randomizeBubbles();
+		//randomizeBubbles();
 		render();
 		setupEvents();
 		_self._options = _options;
 		_self.setText = setText;
 		_self.getArtefactBounds = getArtefactBounds;
 		_self.requestRedraw = requestRedraw;
+		_self.render = render;
 		_self.serialize = serialize;
+		_self.editCreatedBy = editCreatedBy;
+		_self.editUsedBy = editUsedBy;
+		_self.getCreatedBy = function(){return createdBy;};
+		_self.getUsedBy = function(){return usedBy;};
+		_self._boxTopOffset = _boxTopOffset;
+		
 		
 		return _self;
 	};

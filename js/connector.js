@@ -1,14 +1,15 @@
 
 
 
-var Connector = function(from, to)
+var Connector = function(from, to, options)
 {
 
 	var
 		_self = new createjs.Shape(),
 		_options = 
 		{
-			color: '#90837a',
+			color: 'green',// '#90837a',
+			style : 'line1',
 			selectedColor : '#1c376c',
 			width: 2, 
 			selectedWidth : 3,
@@ -21,11 +22,40 @@ var Connector = function(from, to)
 			{
 				size:10,
 				angle:Math.PI/10
-			}
+			},
+			assets :
+			{
+				line1: {image: null, url:'img/line1.png'},
+				line2: {image: null, url:'img/line2.png'}
+	 		}
 		},
 		serialize = function()
 		{
 			return null;
+		},
+
+		preloadAssets = function (callback)
+		{
+			var n = 0;
+			var onImgLoaded = function()
+			{
+				n--;
+				if (n===0)
+				{
+					//console.log('Viss ielādēts');
+					if (callback) callback();
+				}
+			};
+			for(var asset in _options.assets)
+			{
+				n = n+1;
+				console.log(asset);
+				var img = new Image();
+				img.onload = onImgLoaded;
+				img.src = _options.assets[asset].url;
+
+				_options.assets[asset].image = img;
+			}
 		},
 		getAngleBetweenPoints = function(p0, A, B)
 		{
@@ -91,13 +121,7 @@ var Connector = function(from, to)
 				// if nothing is known, return midpoint
 				return getMidpoint(fromBounds);
 			}
-			
 
-
-
-
-
-			
 		},
 		line = function(selected)
 		{
@@ -105,11 +129,28 @@ var Connector = function(from, to)
 			 	a = calculateConnectionPoint(from, to),
 			 	b = calculateConnectionPoint(to,from),// to.getConnectionPoint(from),
 				d = Math.PI/10, qX = 0, qY = 0;
-			
 			g.moveTo(a.x,a.y);
-	      	g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
-	        g.beginStroke( selected ? _options.selectedColor :  _options.color);
-	       	
+	      //
+	  	   g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
+	       if (selected)
+	       {
+				
+	       	 	g.beginStroke(_options.selectedColor );
+	       }
+	       else
+	       {
+	 			if (_options.style == 'solid')
+	 			{
+	 				g.beginStroke(_options.color );
+	 			}
+	 			else
+	 			{
+	 				
+	 				g.beginBitmapStroke(_options.assets[_options.style].image, 'repeat');
+	 			}
+	       		
+	       }
+	       
 	        // gettings mindpoints..
 	        var deltaX = (b. x - a.x);
 	        var deltaY = (b.y - a.y);
@@ -148,7 +189,8 @@ var Connector = function(from, to)
 	        //g.setStrokeStyle(_options.width / 2);
 			if (!!_options.endArrow)
 			{
-
+					g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
+	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
 				g.moveTo(b.x,b.y);
 		        g.lineTo(b.x+ Math.sin( a.alpha + _options.endArrow.angle) * _options.endArrow.size, b.y+Math.cos(  a.alpha+_options.endArrow.angle) * _options.endArrow.size);
 		        g.moveTo(b.x,b.y);
@@ -157,6 +199,8 @@ var Connector = function(from, to)
 			}
 			if (!!_options.startArrow)
 			{
+					g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
+	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
 				g.moveTo(a.x,a.y);
 		        g.lineTo(a.x+ Math.sin( b.alpha + _options.startArrow.angle) * _options.startArrow.size, a.y+Math.cos(  b.alpha+_options.startArrow.angle) * _options.startArrow.size);
 		        g.moveTo(a.x,a.y);
@@ -187,6 +231,37 @@ var Connector = function(from, to)
 	      	event.target = _self;
 	      	_self.dispatchEvent(event);
 		},
+		openEditor = function(connector)
+		{
+
+			var editor = $('#connectorEdit');
+
+
+
+		//	_options.color == 'green'
+			$('input[value="'+_options.color+'"]', editor).prop("checked", true);
+			
+			if (_options.style == 'solid')
+			{
+				$('input[value="solid"]', editor).prop("checked", true);
+			}
+			else
+			{
+				$('input[value="dashed"]', editor).prop("checked", true);
+			}
+			//console.log($('radio[value="'+_options.color+'"]', editor));
+
+			$(editor).data({_object: connector}).modal({show:true, });
+		},
+
+		setStyle = function( color, style)
+		{
+			_options.style = style;
+			_options.color =  color;
+			console.log('setStyle');
+			render();
+			requestRedraw();
+		},
 		setupEvents = function()
 		{
 			if (from.on)
@@ -201,7 +276,6 @@ var Connector = function(from, to)
 			} 
 			_self.on('mouseover', function() 
 			{
-				console.log('con:mouseover');
 				_self.set({graphics:line(true)});
 				requestRedraw();
 			});	
@@ -210,12 +284,18 @@ var Connector = function(from, to)
 				_self.set({graphics:line(false)});
 				requestRedraw();
 			});	
-			_self.on('click', function(){ console.log('click', _self);});
+			_self.on('dblclick', function(){ openEditor(_self);});
 		};
+
+		_options = $.extend(true, _options, options );
+		preloadAssets();
 		render();
 		setupEvents();
 
 		_self.update = updateLine;
+		_self.setStyle = setStyle;
+		_self.requestRedraw = requestRedraw;
+		_self.options = _options;
 		_self.className = 'Connector';
 		return _self;
 };

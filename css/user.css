@@ -1,0 +1,66 @@
+form legend
+{
+	margin-bottom: 10px;
+	margin-top:15px;
+	font-size: 14px;
+}
+
+form .half-width
+{
+	min-height: 50px;
+
+
+	width: 40%;
+	margin-right: 10%;
+	float: left;
+}
+form .half-width:last-child
+{
+	margin-right: 0;
+}
+
+
+br.cl
+{
+	clear: both;
+}
+
+
+/* Role editor */
+#artefactEdit
+{
+	min-width: 600px;
+}
+.role-editor
+{
+	border:1px solid gray;
+	overflow: scroll;
+	height: 200px;
+}
+
+.role-editor .item
+{
+	border-bottom: 1px solid gray;
+	padding:5px 10px;
+
+}
+.role-editor .item > *
+{
+	display: inline;
+	float: left;
+}
+
+.role-editor .item label
+{
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  padding: 0 5px;
+}
+
+.role-editor .item .style input
+{
+	margin:3px;
+}

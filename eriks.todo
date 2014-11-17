@@ -8,6 +8,7 @@ Graph drawing engine:
     ✔ Resize with container @done (14-10-25 00:34)
     ☐ Bubbles add/remove
     ☐ save/export
+    ☐ Edit connectors
 User interface
     ☐ Select theme (bootstrap)
     ☐ add stuff

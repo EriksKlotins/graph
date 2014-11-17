@@ -4,6 +4,7 @@
 
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" type="text/css" href="css/user.css">
 	<title>Demo</title>
 	
 	<style type="text/css">
@@ -36,11 +37,107 @@
 
 	</div>
 
+	<!-- Connector editor -->
+	<div class="modal fade" id="connectorEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title" id="">Edit connection</h4>
+	      </div>
+	      <div class="modal-body">
+	       <!-- body -->
+	       	<form class="form-horizontal" role="form" onsubmit="javascript:return false;">
+	       		<legend>Connector style</legend>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="lineType" id="" value="solid" checked>
+				    Solid
+				  </label>
+				</div>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="lineType" id="" value="dashed">
+				    Dashed
+				  </label>
+				</div>
+
+				<legend>Connector color</legend>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="lineColor" id="" value="green" checked>
+				    Green
+				  </label>
+				</div>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="lineColor" id="" value="red">
+				    Red
+				  </label>
+				</div>
+			</form>
+	       <!-- end body -->
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary"  data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- Artefact editor -->
+	<div class="modal fade" id="artefactEdit" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title" id="">Edit artefact</h4>
+	      </div>
+	      <div class="modal-body">
+	       <!-- body -->
+	       	<form class="form-vertical" role="form" onsubmit="javascript:return false;">
+	       		
+
+	       		<div class="form-group">
+    				<input type="text" class="form-control" name="title" placeholder="Title of the artefact">
+  				</div>
+  				<div class="half-width">
+  					<legend>Creators</legend>
+  					<div class="role-editor creator">
+  						<div class="items">
+	  						
+	  					</div>
+  					</div>
+  				</div>
+  				<div class="half-width">
+  					<legend>Users</legend>
+  					<div class="role-editor user">
+  						<div class="items">
+	  						
+	  					</div>
+  					</div>
+  				</div>
+  				<br class="cl">
+
+
+			</form>
+	       <!-- end body -->
+	      </div>
+	      <div class="modal-footer">
+	       <button type="button" class="btn " data-dismiss="modal" >Cancel</button>
+	        <button type="button" class="btn btn-primary" id="apply" >Apply</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 
 <!-- Scripts -->
 <script type="text/javascript" src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="js/connector-editor.js"></script>
+<script type="text/javascript" src="js/artefact-editor.js"></script>
 <script type="text/javascript" src="js/mouse.js"></script>
 <script type="text/javascript" src="js/bubble.js"></script>
 <script type="text/javascript" src="js/menu.js"></script>
