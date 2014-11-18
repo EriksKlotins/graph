@@ -9,7 +9,7 @@ window. ArtefactEditor = function(artefact)
 	_editor = $('#artefactEdit'),
 	roleItem = function(id,role)
 	{	
-		var result = $('<div class="item"><input type="checkbox" name="enable" id="'+id+'" /><label for="'+id+'">'+role.options.title+'</label><div class="style"><input type="radio" value="0" name="style_'+id+'" checked="checked"><input type="radio" value="1" name="style_'+id+'" ></div> <br class="cl"> </div>');
+		var result = $('<div class="item"><input type="checkbox" name="enable" id="'+id+'" /><label for="'+id+'">'+role.options.title+'</label><div class="style"><input type="radio" value="0" name="style_'+id+'" checked="checked"><input type="radio" value="1" name="style_'+id+'" ></div><br class="cl"/> </div>');
 		$(result).data('role', role);
 		return result;
 	},
@@ -19,8 +19,16 @@ window. ArtefactEditor = function(artefact)
 		$('.role-editor.creator .items', _editor).empty();
 		$('.role-editor.user .items', _editor).empty();
 		$('#apply', _editor).off('click');
+		$('#delete', _editor).off('click');
 	},
-	
+	onDelete = function()
+	{
+		if (confirm('Really delete "'+artefact._options.title+'"?'))
+    	{
+			artefact.doRemove();
+			$(_editor).modal('hide');
+		}
+	},
 	onApply = function()
 	{
 		console.log('onApply');
@@ -120,6 +128,7 @@ window. ArtefactEditor = function(artefact)
 		}
 
 		$('#apply', _editor).on('click',onApply);
+		$('#delete', _editor).on('click',onDelete);
 	};
 
 	_initialize();

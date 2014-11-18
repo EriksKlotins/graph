@@ -23,6 +23,7 @@ form .half-width:last-child
 br.cl
 {
 	clear: both;
+	float: none;
 }
 
 
@@ -44,11 +45,16 @@ br.cl
 	padding:5px 10px;
 
 }
-.role-editor .item > *
+.role-editor .item input,
+.role-editor .item label,
+.role-editor .item .style
+
 {
 	display: inline;
 	float: left;
 }
+
+
 
 .role-editor .item label
 {

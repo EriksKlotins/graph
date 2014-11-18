@@ -30,7 +30,9 @@
 					width: 100, 
 					height: 60,
 					minWidth : 100,
-					minHeight : 60
+					minHeight : 60,
+					maxWidth : 200,
+					maxHeight: 100
 				},
 				bubble:
 				{
@@ -40,7 +42,7 @@
 			box = new createjs.Shape(),
 			connectionPointsOverlay = new createjs.Shape(),
 			//userBubbleOverlay = new createjs.Container(),
-			deleteButtonOverlay = new createjs.Shape(),
+		//	deleteButtonOverlay = new createjs.Shape(),
 		//	addCreatorBubbleOverlay = new createjs.Container(),
 			label = new createjs.Text(_options.title, _options.label.font, _options.label.color),
 			serialize = function()
@@ -59,6 +61,8 @@
 			
 				_options.title = newTitle;
 				label.text = newTitle;
+				label.maxWidth = _options.box.maxWidth;
+
 				var bounds = label.getBounds();
 				setSize(bounds.width - bounds.x , bounds.height - bounds.y);
 
@@ -143,7 +147,7 @@
 		    setOverlays = function(visible)
 		    {
 		    	connectionPointsOverlay.visible = visible;
-				deleteButtonOverlay.visible = visible;
+			//	deleteButtonOverlay.visible = visible;
 			//	addCreatorBubbleOverlay.visible = visible;
 			//	userBubbleOverlay.visible = visible;
 		    },
@@ -172,12 +176,11 @@
     		},
     		doRemove = function()
     		{
-    			if (confirm('Really delete "'+_optins.title+'"?'))
-    			{
-    				var e = new createjs.Event("remove");
-			      	e.target = _self;
-			      	_self.dispatchEvent(e);
-    			}
+    			
+    			var e = new createjs.Event("remove");
+			  	e.target = _self;
+			    _self.dispatchEvent(e);
+    			
     		},
     		 randomAbbr = function()
 			{
@@ -211,7 +214,7 @@
         		_self .on('mouseover', onMouseIn); 
 			 	_self.on('mouseout', onMouseOut);
 			 	connectionPointsOverlay.on('click',doConnect);
-			 	deleteButtonOverlay.on('click',doRemove);
+			// 	deleteButtonOverlay.on('click',doRemove);
 
 			 	box.on('dblclick',function()
 		 		{ 
@@ -306,12 +309,12 @@
 					.beginStroke(_options.box.border)
 					.drawCircle(b.width/2 , _boxTopOffset + b.height,7);
 			
-				deleteButtonOverlay.graphics = new createjs.Graphics();
-				deleteButtonOverlay
-					.graphics.beginFill('red')
-					.beginStroke(_options.box.border)
-					.drawRect( b.width-10, _boxTopOffset,10,10)
-					.endStroke();
+				// deleteButtonOverlay.graphics = new createjs.Graphics();
+				// deleteButtonOverlay
+				// 	.graphics.beginFill('red')
+				// 	.beginStroke(_options.box.border)
+				// 	.drawRect( b.width-10, _boxTopOffset,10,10)
+				// 	.endStroke();
 
 				// //-- addCreatorBubbleOverlay
 				// addCreatorBubbleOverlay = new Bubble('edit', '',{bubble:{color:'white'}});
@@ -339,8 +342,8 @@
 				_self.addChild(
 					box, 
 					label, 
-					connectionPointsOverlay, 
-					deleteButtonOverlay
+					connectionPointsOverlay
+					//deleteButtonOverlay
 					//addCreatorBubbleOverlay,
 					//userBubbleOverlay
 				);
@@ -363,6 +366,7 @@
 		_self.getCreatedBy = function(){return createdBy;};
 		_self.getUsedBy = function(){return usedBy;};
 		_self._boxTopOffset = _boxTopOffset;
+		_self.doRemove = doRemove;
 		
 		
 		return _self;
