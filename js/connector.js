@@ -6,10 +6,16 @@ var Connector = function(from, to, options)
 
 	var
 		_self = new createjs.Shape(),
+
+
+		_siblings = {from:0, to:0},
+		_order = {from:0, to:0},
+		_connectionPointsGeometry = {from:null, to:null},
+		
 		_options = 
 		{
 			color: 'green',// '#90837a',
-			style : 'line1',
+			style : 'solid',
 			selectedColor : '#1c376c',
 			width: 2, 
 			selectedWidth : 3,
@@ -49,7 +55,6 @@ var Connector = function(from, to, options)
 			for(var asset in _options.assets)
 			{
 				n = n+1;
-				console.log(asset);
 				var img = new Image();
 				img.onload = onImgLoaded;
 				img.src = _options.assets[asset].url;
@@ -65,76 +70,26 @@ var Connector = function(from, to, options)
 			if (A <= 0 && B<= 0) 	alpha = Math.PI - alpha;
 			if (A > 0 && B < 0) 	alpha = Math.PI*2 + alpha;
 
-			return  Math.PI/2 - alpha + Math.PI;
+			return    Math.PI /2 - alpha;//+ Math.PI;
 		},
-		getMidpoint = function(bounds)
+		getGeometry = function ()
 		{
-			return {x : bounds.x + bounds.width / 2, y:bounds.y + bounds.height / 2};
+			return _connectionPointsGeometry;
 		},
-		calculateConnectionPoint =  function(from, to )
-		{
-			var fromBounds = from.getArtefactBounds();
-			if (!!to)
-			{
-				// lets see where the other object is..
-				var 
-					toBounds = to.getArtefactBounds(),
-					o = getMidpoint(toBounds),
-					e = getMidpoint(fromBounds),
-					dx = e.x - o.x,
-					dy = e.y- o.y,
-					h = Math.sqrt(dx*dx + dy*dy ),
-					result = null;
-
-
-					if (Math.abs(dx) < Math.abs(dy))
-					{
-						if (e.y > o.y)
-						{
-					//	case 'bottom':
-							result = {x: e.x, y: e.y - fromBounds.height/2, side:'bottom' };
-						}
-						else
-						{
-					//	case 'top':
-							result = {x: e.x, y: e.y + fromBounds.height/2 , side:'top' };
-						}
-					}
-					else
-					{
-						if (e.x> o.x)
-						{
-					//	case 'right':
-							result = {x: e.x- fromBounds.width/2, y: e.y, side:'right'  };
-						}
-						else
-						{
-					//	case 'left':
-							result = {x: e.x+  fromBounds.width/2, y: e.y , side:'left' };
-						}
-					}
-					return result;
-
-			}
-			else
-			{
-				// if nothing is known, return midpoint
-				return getMidpoint(fromBounds);
-			}
-
-		},
+		
 		line = function(selected)
 		{
 			var g = new createjs.Graphics(),
-			 	a = calculateConnectionPoint(from, to),
+			 	a = calculateConnectionPoint(from,to),
 			 	b = calculateConnectionPoint(to,from),// to.getConnectionPoint(from),
 				d = Math.PI/10, qX = 0, qY = 0;
-			g.moveTo(a.x,a.y);
-	      //
+			_connectionPointsGeometry = {from: a, to: b};
+		   
+
+		 
 	  	   g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       if (selected)
 	       {
-				
 	       	 	g.beginStroke(_options.selectedColor );
 	       }
 	       else
@@ -151,6 +106,11 @@ var Connector = function(from, to, options)
 	       		
 	       }
 	       
+
+
+	    
+
+
 	        // gettings mindpoints..
 	        var deltaX = (b. x - a.x);
 	        var deltaY = (b.y - a.y);
@@ -166,30 +126,29 @@ var Connector = function(from, to, options)
 				qX = +deltaX/4;
 	        	qY = -deltaY/4;
 	        }
+	      
 
 	        var p1 = {
-	        	x : a.x + deltaX/4 + qX,
-	        	y : a.y + deltaY/4 + qY
+	        	x : a.x + deltaX/4 + qX,// * 0.5* (_order+1),
+	        	y : a.y + deltaY/4 + qY// * 0.5*(1+_order)
 	        };
 	        
 
 	        var p2 = {
-	        	x : b.x - deltaX/4 - qX,
-	        	y : b.y - deltaY/4 - qY
+	        	x : b.x - deltaX/4 - qX,// * 0.5*(1+_order),
+	        	y : b.y - deltaY/4 - qY// * 0.5*(1+_order)
 	        };
-
+	         g.moveTo(a.x,a.y);
 	       	g.bezierCurveTo(p1.x,p1.y , p2.x,p2.y,b.x,b.y);
 
 	       	// alphas
-	       	a.alpha = getAngleBetweenPoints(a, deltaX/4 + qX,  deltaY/4 + qY);
-	       	b.alpha = getAngleBetweenPoints(b, - deltaX/4 - qX,- deltaY/4 - qY );
-
-				        
+	       	a.alpha = getAngleBetweenPoints(a,a.x- p1.x,  a.y-p1.y);
+	       	b.alpha = getAngleBetweenPoints(b, b.x - p2.x, b.y-p2.y );
 	        //g.lineTo(b.x,b.y);
 	        //g.setStrokeStyle(_options.width / 2);
 			if (!!_options.endArrow)
 			{
-					g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
+				g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
 				g.moveTo(b.x,b.y);
 		        g.lineTo(b.x+ Math.sin( a.alpha + _options.endArrow.angle) * _options.endArrow.size, b.y+Math.cos(  a.alpha+_options.endArrow.angle) * _options.endArrow.size);
@@ -199,7 +158,7 @@ var Connector = function(from, to, options)
 			}
 			if (!!_options.startArrow)
 			{
-					g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
+				g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
 				g.moveTo(a.x,a.y);
 		        g.lineTo(a.x+ Math.sin( b.alpha + _options.startArrow.angle) * _options.startArrow.size, a.y+Math.cos(  b.alpha+_options.startArrow.angle) * _options.startArrow.size);
@@ -235,10 +194,6 @@ var Connector = function(from, to, options)
 		{
 
 			var editor = $('#connectorEdit');
-
-
-
-		//	_options.color == 'green'
 			$('input[value="'+_options.color+'"]', editor).prop("checked", true);
 			
 			if (_options.style == 'solid')
@@ -254,6 +209,102 @@ var Connector = function(from, to, options)
 			$(editor).data({_object: connector}).modal({show:true, });
 		},
 
+		setSiblings = function(count, order, endPoint)
+		{
+			//console.log(endPoint);
+			_siblings[endPoint] = count;
+			_order[endPoint] = order;
+			updateLine();
+		},
+		getMidpoint = function(bounds)
+		{
+			return {x : bounds.x + bounds.width / 2, y:bounds.y + bounds.height / 2};
+		},
+		
+		calculateConnectionPoint =  function(from, to )
+			{
+				var 
+					fromBounds = from.getArtefactBounds();
+				if (!!to)
+				{
+					// lets see where the other object is..
+					var 
+						toBounds = to.getArtefactBounds(),
+						o = getMidpoint(toBounds),
+						e = getMidpoint(fromBounds),
+						dx = e.x - o.x,
+						dy = e.y- o.y,
+						h = Math.sqrt(dx*dx + dy*dy ),
+						result = null;
+						// --------
+						if (Math.abs(dx) < Math.abs(dy))
+						{
+							if (e.y > o.y)
+							{	
+								result = {x: e.x , y: e.y - fromBounds.height/2, side:'bottom' };
+							}
+							else
+							{
+								result = {x: e.x , y: e.y + fromBounds.height/2 , side:'top' };
+							}
+						}
+						else
+						{
+							if (e.x> o.x)
+							{
+								result = {x: e.x - fromBounds.width/2, y: e.y, side:'right'  };
+							}
+							else
+							{
+								result = {x: e.x + fromBounds.width/2, y: e.y , side:'left' };
+							}
+						}
+
+						// count how many other connectors there are
+					
+							var siblings = from.getConnectors(), num = 0;
+							for (var i = 0;i<siblings.length;i++)
+							{
+								var g = siblings[i].getGeometry();
+								console.log(g, result.side);
+								if (g.from.side == result.side)
+								{
+									num++;
+								}
+							}
+
+
+							// we have overall count.. 
+							// how to get number of each..
+
+
+						   if ([ 'top', 'bottom'].indexOf(result.side)>=0)
+					       {
+					       	result.x += _order.from * 10;
+					      
+					       }
+					       else
+					       {
+					       	  result.y += _order.from * 10;
+
+					       }
+					      
+							console.log('There are ', num ,' side by side connectors');
+
+						
+						
+
+
+						return result;
+
+				}
+				else
+				{
+					// if nothing is known, return midpoint
+					return getMidpoint(fromBounds);
+				}
+
+			},
 		setStyle = function( color, style)
 		{
 			_options.style = style;
@@ -268,11 +319,13 @@ var Connector = function(from, to, options)
 			{
 				from.on('needRedraw', updateLine);
 				from.on('remove', doRemove);
+			//	from.on('drop', checkMultipleConnectors);
 			}
 			if (to.on)
 			{
 				to.on('needRedraw', updateLine);
 				to.on('remove', doRemove);
+				//to.on('drop', checkMultipleConnectors);
 			} 
 			_self.on('mouseover', function() 
 			{
@@ -288,15 +341,28 @@ var Connector = function(from, to, options)
 		};
 
 		_options = $.extend(true, _options, options );
+
+		
+		
 		preloadAssets();
 		render();
 		setupEvents();
+
+
 
 		_self.update = updateLine;
 		_self.setStyle = setStyle;
 		_self.requestRedraw = requestRedraw;
 		_self.options = _options;
+		_self.doRemove = doRemove;
 		_self.className = 'Connector';
+		_self.from = from;
+		_self.to = to;
+		_self.getGeometry = getGeometry;
+		_self.setSiblings = setSiblings;
+		_self.calculateConnectionPoint = calculateConnectionPoint;
+		from.connectorAttached(_self, 'from');
+		to.connectorAttached(_self,  'to');
 		return _self;
 };
 

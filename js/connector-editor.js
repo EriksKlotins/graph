@@ -1,16 +1,15 @@
-console.log('atetata');
-$(document).ready(function(){
-
+$(document).ready(function()
+{
+	var _editor = $('#connectorEdit');
 //$('#connectorEdit').data()['bs.modal'].options._object.options
 
 	var changeLineType = function()
 	{
 		
 		var 
-			editor = $('#connectorEdit'),
-			type = $('[name="lineType"]:checked',editor).val(),
-		 	color = $('[name="lineColor"]:checked',editor).val(),
-			connector = $(editor).data('_object');
+			type = $('[name="lineType"]:checked',_editor).val(),
+		 	color = $('[name="lineColor"]:checked',_editor).val(),
+			connector = $(_editor).data('_object');
 		
 
 		if (type == 'solid')
@@ -21,9 +20,17 @@ $(document).ready(function(){
 		{
 			connector.setStyle(color == 'red'? 'red' : 'green',color == 'red'? 'line2' : 'line1');
 		}
+	},
+	doRemove = function()
+	{
+		console.log('remove');
+		var connector = $(_editor).data('_object');
+		connector.doRemove();
 	};
 
-	$('#connectorEdit input[type="radio"]').on('change',changeLineType);
+	$('input[type="radio"]', _editor).on('change',changeLineType);
+	$('#delete', _editor).on('click', doRemove);
+
 });
 
 

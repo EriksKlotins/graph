@@ -11,20 +11,25 @@
 		canvas
 		{
 			 /* border: 2px solid red; */
+			 display: block;
+			 border: 2px solid red;
+			  background: linear-gradient(white, #b7aea5);
 		}
 		.canvas-wrapper
 		{
-			 background: linear-gradient(white, #b7aea5); /* For Safari 5.1 to 6.0 */
+			 /* For Safari 5.1 to 6.0 */
+			overflow: scroll;
+			border: 1px solid red;
 		}
 	</style>
 </head>
 <body>
-	<div class="container">
+	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
 				<p>Drag the objects</p>
-				<a class="btn btn-default" id="add-new">Add new box</a>
-				<a class="btn btn-default" id="export">Export</a>
+				<a class="btn btn-default" id="add-new">Add new Artefact</a>
+				<!-- <a class="btn btn-default" id="export">Export</a> -->
 			</div>
 		</div>
 		<div class="row">
@@ -79,6 +84,7 @@
 	       <!-- end body -->
 	      </div>
 	      <div class="modal-footer">
+	       <button type="button" id="delete" class="btn pull-left btn-danger" >Remove</button>
 	        <button type="button" class="btn btn-primary"  data-dismiss="modal">Close</button>
 	      </div>
 	    </div>

@@ -18,7 +18,7 @@ var MouseObject = function(stage)
 			},
 			setDragObject = function(obj)
 			{
-				console.log('setDragObject',obj);
+				//console.log('setDragObject',obj);
 				_draggingObject = obj;
 			},
 			getDragObject = function()
@@ -31,6 +31,18 @@ var MouseObject = function(stage)
 				// _dragging = false;
 				// _draggingObject=null;
 			},
+			connectorAttached = function()
+			{
+
+			},
+			getConnectors = function()
+			{
+				return [];
+			},
+			calculateConnectionPoint = function()
+			{
+				return getArtefactBounds();
+			},
 			initialize = function()
 			{
 				stage.on('stagemousemove', onMouseOver);
@@ -41,6 +53,9 @@ var MouseObject = function(stage)
 			this.getArtefactBounds = getArtefactBounds;
 			this.setDragObject = setDragObject;
 			this.getDragObject = getDragObject;
+			this.getConnectors = getConnectors;
+			this.connectorAttached = connectorAttached;
+			this.calculateConnectionPoint = calculateConnectionPoint;
 		initialize();
 	};
 

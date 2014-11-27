@@ -16,6 +16,7 @@
 			_boxTopOffset = 0,
 			createdBy = [], 
 			usedBy = [],
+			connectors = [],
 			_options = {
 				title:'Document',
 				label:{
@@ -41,21 +42,29 @@
 			},
 			box = new createjs.Shape(),
 			connectionPointsOverlay = new createjs.Shape(),
-			//userBubbleOverlay = new createjs.Container(),
-		//	deleteButtonOverlay = new createjs.Shape(),
-		//	addCreatorBubbleOverlay = new createjs.Container(),
 			label = new createjs.Text(_options.title, _options.label.font, _options.label.color),
+			
+			/*
+				Returns serialized artefact
+			*/
 			serialize = function()
 			{
 				return {className: 'Document', x: _self.x, y:_self.y,_options:_options, title: _options.title, createdBy : createdBy, usedBy : usedBy, options:options};
 			},
+
+			/*
+				Calls for canvas redraw. Redraw is handled by loader.js
+			*/
 			requestRedraw = function()
 			{
 				var event = new createjs.Event("needRedraw");
-		      	event.target = _self;
-		      
+		      	event.target = _self; 
 		      	_self.dispatchEvent(event);
 			},
+
+			/*
+				Changes artefact title and adjust size of the box
+			*/
 			setText = function(newTitle)
 			{
 			
@@ -72,12 +81,18 @@
 				
 			},
 
+			/*
+				Updates box dimensions
+			*/
 			setSize = function(width, height)
 			{
 				_options.box.width = Math.max(_options.box.minWidth, width);
 				_options.box.height = Math.max(_options.box.minHeight, height);
 			},
-
+			
+			/*
+				Draws artefact box. Returns Graphics object
+			*/
 			drawBox = function(selected)
 			{
 				var box = new createjs.Graphics();
@@ -90,6 +105,10 @@
 
 				return box;
 			},
+
+			/*
+				Handler for dragging event
+			*/
 			doDragging = function(evt)
 		    {
 		    	var obj = evt.currentTarget;
@@ -108,12 +127,22 @@
 
 		      	// return false;
 		    },
+
+		    /*
+				Dispatches an event signalling that dragging has ended
+		    */
 		    endDragging = function(event)
 		    {
 		        // do nothing..
 		        _isDragging = false;
+		        var e = new createjs.Event("moved");
+		      	e.target = _self;
+		      	_self.dispatchEvent(e);
 		    },
 
+		    /*
+				Signals that new connector should be created (handled by loader.js)
+		    */
 		    doConnect = function(event)
 		    {
 		    	var e = new createjs.Event("newConnector");
@@ -121,18 +150,20 @@
 		      	_self.dispatchEvent(e);
 		    },
 
-
+		    /*
+				Handler for mouse out event
+		    */
 		    onMouseOut = function(event)
 		    {
-		    	//console.log('Artefact.onMouseOut');
 		    	box.graphics = drawBox();
 		    	setOverlays(false);
 		    	requestRedraw();
-	 		//	
 		    },
+		    /*
+				Handler for mouse in event
+		    */
 		    onMouseIn = function(event)
 		    {
-		    //	console.log('Artefact.onMouseIn');
 		    	box.graphics = drawBox(true);
 
 		    	var obj = window.Mouse.getDragObject();
@@ -144,6 +175,10 @@
 		    	
 		    	requestRedraw();
 		    },
+
+		    /*
+				Handles show/hide of all overalys
+		    */
 		    setOverlays = function(visible)
 		    {
 		    	connectionPointsOverlay.visible = visible;
@@ -151,9 +186,13 @@
 			//	addCreatorBubbleOverlay.visible = visible;
 			//	userBubbleOverlay.visible = visible;
 		    },
+
+		    /*
+				Handles "drop" of connector to the box
+		    */
 		    onDrop = function(event)
     		{
-    			//console.log('Artefact.onDrop', _isDragging);
+    			console.log('connections', connectors.length, connectors);
     			if (_isDragging)
     			{
     				endDragging();
@@ -168,12 +207,68 @@
     					var e = new createjs.Event("drop");
 				      	e.originalTarget = _self;
 				      	obj.dispatchEvent(e);
+				     
     				}	
     			}
-    			
-    			
-
     		},
+
+    		/*
+				Registers new connector 
+				called by loader.js
+				[todo] refactor this
+    		*/
+    		connectorAttached = function(connector, endPoint)
+    		{
+
+ 				connectors.push(connector);	 		
+ 				var siblings = [];
+				var currentGeometry = connector.getGeometry();
+				for (var i=0;i<connectors.length;i++)
+				{
+					var g = connectors[i].getGeometry();
+					if (g[endPoint].side == currentGeometry[endPoint].side)
+					{
+						siblings.push(connector);
+					}
+				} 
+				for(i =0;i<siblings.length;i++)
+				{
+					siblings[i].setSiblings(siblings.length,i,endPoint);
+				}
+    		},
+
+
+    		/*
+				Registers remove or connector 
+				called by loader.js
+				[todo] refactor this
+    		*/
+    		connectorRemoved = function(connector)
+    		{
+    			for (var i=0;i<connectors.length;i++)
+    			{
+    				//console.log(i, connectors[i].id, connector.id);
+    				if (connectors[i] == connector)
+    				{
+    					connectors.splice(i, 1);
+    				//	console.log('con removed',connectors.length);
+    					break;
+
+    				}
+    			}
+    		},
+
+    		/*
+				Return all conectors attached to the box
+    		*/
+    		getConnectors = function()
+    		{
+    			return connectors;
+    		},
+
+    		/*
+				Dispatches an event requesting removal of the artefact (handled by loader.js)
+    		*/
     		doRemove = function()
     		{
     			
@@ -182,31 +277,10 @@
 			    _self.dispatchEvent(e);
     			
     		},
-    		 randomAbbr = function()
-			{
-				return 	String.fromCharCode( 65 + Math.random()*25 )+
-						String.fromCharCode( 65 + Math.random()*25 )+
-						String.fromCharCode( 65 + Math.random()*25 );
-			},
-    		randomizeBubbles = function()
-    		{
-    			var i;
-    			createdBy = [];
-    			usedBy = [];
-    			for ( i=0;i<Math.random() * 5; i++)
-    			{
-    				createdBy.push(new Bubble(randomAbbr() ));
-    			}
 
-    			for ( i=0;i<Math.random() * 5; i++)
-    			{
-    				usedBy.push(new Bubble( randomAbbr()) );
-    			}
-    			render();
-    			_self.y -= _boxTopOffset;
-    			requestRedraw();
-
-    		},
+    		/*
+				Attaches all event listeners
+    		*/
 			setupEvents = function()
 			{
 				_self.on("pressmove", doDragging);
@@ -220,21 +294,12 @@
 		 		{ 
 		 			var editor = new ArtefactEditor(_self);
 		 			editor.open();
-		 			// var a = prompt('title? ', title); 
-		 			// if (a)
-		 			// {
-		 				
-			 		// 	setText(a); 
-			 	
-		 			// 	_boxTopOffset = 0;
-		 			// 	render(); 
-		 			// 	requestRedraw();
-			 			
-		 			// }
-		 			
 		 		});
 			},
 			
+			/*
+				Returns box dimensions (used by connectors)
+			*/
 			getArtefactBounds = function()
 			{
 				return {
@@ -243,6 +308,10 @@
 					width : _options.box.width, 
 					height: _options.box.height};
 			},
+
+			/*	
+				Updates roles
+			*/
 			editCreatedBy = function(roles)
 			{
 		
@@ -252,6 +321,10 @@
 				_self.y -= _boxTopOffset;
 				requestRedraw();
 			},
+
+			/*	
+				Updates roles
+			*/
 			editUsedBy = function(roles)
 			{
 				usedBy = roles;//.push(new Bubble(randomAbbr(), ''));
@@ -259,6 +332,10 @@
 				_self.y -= _boxTopOffset;
 				requestRedraw();
 			},
+
+			/*	
+				Draws most of the graphics
+			*/
 			render = function()
 			{
 				i = 0;
@@ -309,50 +386,15 @@
 					.beginStroke(_options.box.border)
 					.drawCircle(b.width/2 , _boxTopOffset + b.height,7);
 			
-				// deleteButtonOverlay.graphics = new createjs.Graphics();
-				// deleteButtonOverlay
-				// 	.graphics.beginFill('red')
-				// 	.beginStroke(_options.box.border)
-				// 	.drawRect( b.width-10, _boxTopOffset,10,10)
-				// 	.endStroke();
-
-				// //-- addCreatorBubbleOverlay
-				// addCreatorBubbleOverlay = new Bubble('edit', '',{bubble:{color:'white'}});
-				// addCreatorBubbleOverlay.x = _options.bubble.radius;
-				// addCreatorBubbleOverlay.y = _boxTopOffset - (createdBy.length*0)*2*_options.bubble.radius-2-_options.bubble.radius;
-				// 	addCreatorBubbleOverlay.on('click', editCreatedBy);
-				// //-- userBubbleOverlay
-				// userBubbleOverlay = new Bubble('edit', '',{bubble:{color:'white'}});
-				// userBubbleOverlay.x = _options.box.width- _options.bubble.radius;
-				// userBubbleOverlay.y =  _boxTopOffset - (usedBy.length*0)*2*_options.bubble.radius-2-_options.bubble.radius;
-
-				// userBubbleOverlay.on('click', editUsedBy);
-
 				setOverlays(false);
-
-
-
-				
-
-			
-
-
 				box.graphics = drawBox();
-				
 				_self.addChild(
 					box, 
 					label, 
 					connectionPointsOverlay
-					//deleteButtonOverlay
-					//addCreatorBubbleOverlay,
-					//userBubbleOverlay
 				);
-		
-				
-			
-			};
 
-		//randomizeBubbles();
+			};
 		render();
 		setupEvents();
 		_self._options = _options;
@@ -367,7 +409,9 @@
 		_self.getUsedBy = function(){return usedBy;};
 		_self._boxTopOffset = _boxTopOffset;
 		_self.doRemove = doRemove;
-		
+		_self.connectorRemoved = connectorRemoved;
+		_self.connectorAttached = connectorAttached;
+		_self.getConnectors = getConnectors;
 		
 		return _self;
 	};
