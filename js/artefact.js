@@ -16,7 +16,7 @@
 			_boxTopOffset = 0,
 			createdBy = [], 
 			usedBy = [],
-			connectors = [],
+	
 			_options = {
 				title:'Document',
 				label:{
@@ -192,7 +192,6 @@
 		    */
 		    onDrop = function(event)
     		{
-    			console.log('connections', connectors.length, connectors);
     			if (_isDragging)
     			{
     				endDragging();
@@ -212,60 +211,7 @@
     			}
     		},
 
-    		/*
-				Registers new connector 
-				called by loader.js
-				[todo] refactor this
-    		*/
-    		connectorAttached = function(connector, endPoint)
-    		{
-
- 				connectors.push(connector);	 		
- 				var siblings = [];
-				var currentGeometry = connector.getGeometry();
-				for (var i=0;i<connectors.length;i++)
-				{
-					var g = connectors[i].getGeometry();
-					if (g[endPoint].side == currentGeometry[endPoint].side)
-					{
-						siblings.push(connector);
-					}
-				} 
-				for(i =0;i<siblings.length;i++)
-				{
-					siblings[i].setSiblings(siblings.length,i,endPoint);
-				}
-    		},
-
-
-    		/*
-				Registers remove or connector 
-				called by loader.js
-				[todo] refactor this
-    		*/
-    		connectorRemoved = function(connector)
-    		{
-    			for (var i=0;i<connectors.length;i++)
-    			{
-    				//console.log(i, connectors[i].id, connector.id);
-    				if (connectors[i] == connector)
-    				{
-    					connectors.splice(i, 1);
-    				//	console.log('con removed',connectors.length);
-    					break;
-
-    				}
-    			}
-    		},
-
-    		/*
-				Return all conectors attached to the box
-    		*/
-    		getConnectors = function()
-    		{
-    			return connectors;
-    		},
-
+    		
     		/*
 				Dispatches an event requesting removal of the artefact (handled by loader.js)
     		*/
@@ -409,9 +355,7 @@
 		_self.getUsedBy = function(){return usedBy;};
 		_self._boxTopOffset = _boxTopOffset;
 		_self.doRemove = doRemove;
-		_self.connectorRemoved = connectorRemoved;
-		_self.connectorAttached = connectorAttached;
-		_self.getConnectors = getConnectors;
+
 		
 		return _self;
 	};

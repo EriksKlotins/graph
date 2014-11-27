@@ -1,5 +1,8 @@
 
 
+/**
+ * Draws a nice line between two connection points
+ */
 
 var Connector = function(from, to, options)
 {
@@ -7,11 +10,6 @@ var Connector = function(from, to, options)
 	var
 		_self = new createjs.Shape(),
 
-
-		_siblings = {from:0, to:0},
-		_order = {from:0, to:0},
-		_connectionPointsGeometry = {from:null, to:null},
-		
 		_options = 
 		{
 			color: 'green',// '#90837a',
@@ -72,10 +70,7 @@ var Connector = function(from, to, options)
 
 			return    Math.PI /2 - alpha;//+ Math.PI;
 		},
-		getGeometry = function ()
-		{
-			return _connectionPointsGeometry;
-		},
+	
 		
 		line = function(selected)
 		{
@@ -83,8 +78,7 @@ var Connector = function(from, to, options)
 			 	a = calculateConnectionPoint(from,to),
 			 	b = calculateConnectionPoint(to,from),// to.getConnectionPoint(from),
 				d = Math.PI/10, qX = 0, qY = 0;
-			_connectionPointsGeometry = {from: a, to: b};
-		   
+			
 
 		 
 	  	   g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
@@ -209,13 +203,7 @@ var Connector = function(from, to, options)
 			$(editor).data({_object: connector}).modal({show:true, });
 		},
 
-		setSiblings = function(count, order, endPoint)
-		{
-			//console.log(endPoint);
-			_siblings[endPoint] = count;
-			_order[endPoint] = order;
-			updateLine();
-		},
+		
 		getMidpoint = function(bounds)
 		{
 			return {x : bounds.x + bounds.width / 2, y:bounds.y + bounds.height / 2};
@@ -260,40 +248,7 @@ var Connector = function(from, to, options)
 							}
 						}
 
-						// count how many other connectors there are
 					
-							var siblings = from.getConnectors(), num = 0;
-							for (var i = 0;i<siblings.length;i++)
-							{
-								var g = siblings[i].getGeometry();
-								console.log(g, result.side);
-								if (g.from.side == result.side)
-								{
-									num++;
-								}
-							}
-
-
-							// we have overall count.. 
-							// how to get number of each..
-
-
-						   if ([ 'top', 'bottom'].indexOf(result.side)>=0)
-					       {
-					       	result.x += _order.from * 10;
-					      
-					       }
-					       else
-					       {
-					       	  result.y += _order.from * 10;
-
-					       }
-					      
-							console.log('There are ', num ,' side by side connectors');
-
-						
-						
-
 
 						return result;
 
@@ -342,13 +297,9 @@ var Connector = function(from, to, options)
 
 		_options = $.extend(true, _options, options );
 
-		
-		
 		preloadAssets();
 		render();
 		setupEvents();
-
-
 
 		_self.update = updateLine;
 		_self.setStyle = setStyle;
@@ -358,11 +309,7 @@ var Connector = function(from, to, options)
 		_self.className = 'Connector';
 		_self.from = from;
 		_self.to = to;
-		_self.getGeometry = getGeometry;
-		_self.setSiblings = setSiblings;
 		_self.calculateConnectionPoint = calculateConnectionPoint;
-		from.connectorAttached(_self, 'from');
-		to.connectorAttached(_self,  'to');
 		return _self;
 };
 

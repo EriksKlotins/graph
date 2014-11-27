@@ -4,7 +4,7 @@
  * Extends any object with feature to be connected
  * @param {[type]} artefact
  */
-var Connectable = function(artefact)
+var ConnectionPoint = function(artefact)
 {
 	var
 		_self = {},

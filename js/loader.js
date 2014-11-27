@@ -64,8 +64,6 @@
 							tmp.on('remove', function(e)
 							{
 								stage.removeChild(e.target);
-								from.connectorRemoved(tmp);
-								to.connectorRemoved(tmp);
 								updateStage();
 							});
 							tmp.on('needRedraw', function(e)
@@ -82,7 +80,7 @@
 						
 							
 						}
-						from.connectorRemoved(connector);
+						
 					
 					});
 					var onMouseMoveEvent = stage.on('stagemousemove', onMouseMove);
