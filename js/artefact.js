@@ -26,7 +26,7 @@
 				}, 
 				box: 
 				{
-					color: '#fcd905', 
+					color: '#eaa33e', 
 					selectedColor : '#fcd905',//'#e17f26',
 					border: '#1e376d',
 					width: 100, 
@@ -358,7 +358,7 @@
 				);
 
 			},
-			registerConnection = function(id, side)
+			registerConnection = function(id, side, to)
 			{
 				//console.log('registerConnection', id);
 				for (var i=0;i<_connectors.length;i++)
@@ -369,7 +369,11 @@
 						return i;
 					}
 				}
-				_connectors.push({'id': id, side : side});
+				_connectors.push({'id': id, side : side, to: to.id});
+				_connectors.sort(function(a,b){
+					return a.to - b.to;
+
+				});
 				return (_connectors.length-1);
 			},
 			removeConnection = function(id)

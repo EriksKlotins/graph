@@ -17,13 +17,16 @@ var Connector = function(from, to, options)
 			selectedColor : '#1c376c',
 			width: 2, 
 			selectedWidth : 3,
+
 			startArrow: 
 			{
+				visible:true,
 				size:10,
 				angle:Math.PI/10
 			},
 			endArrow: 
 			{
+				visible:true,
 				size:10,
 				angle:Math.PI/10
 			},
@@ -75,7 +78,7 @@ var Connector = function(from, to, options)
 			if (A <= 0 && B<= 0) 	alpha = Math.PI - alpha;
 			if (A > 0 && B < 0) 	alpha = Math.PI*2 + alpha;
 
-			return    Math.PI /2 - alpha;//+ Math.PI;
+			return   Math.PI/2- alpha  ;
 		},
 	
 		
@@ -141,15 +144,22 @@ var Connector = function(from, to, options)
 	        	x : b.x - deltaX/4 - qX,// * 0.5*(1+_order),
 	        	y : b.y - deltaY/4 - qY// * 0.5*(1+_order)
 	        };
-	         g.moveTo(a.x,a.y);
-	       	g.bezierCurveTo(p1.x,p1.y , p2.x,p2.y,b.x,b.y);
+	       //  g.moveTo(a.x,a.y).lineTo(p1.x, p1.y);
+	        // g.moveTo(b.x,b.y).lineTo(p2.x, p2.y);
+
+
+	    //     g.;
+	       	g.moveTo(a.x,a.y).bezierCurveTo(p1.x,p1.y , p2.x,p2.y,b.x,b.y);
 
 	       	// alphas
-	       	a.alpha = getAngleBetweenPoints(a,a.x- p1.x,  a.y-p1.y);
-	       	b.alpha = getAngleBetweenPoints(b, b.x - p2.x, b.y-p2.y );
+	     //  	a.alpha = getAngleBetweenPoints(a, ;
+	     	a.alpha = getAngleBetweenPoints(a, -qX - deltaX/3,-qY - deltaY/3);
+	       	b.alpha = getAngleBetweenPoints(b, qX + deltaX/3,qY + deltaY/3);
+
+	       	console.log(  qX, qY );
 	        //g.lineTo(b.x,b.y);
 	        //g.setStrokeStyle(_options.width / 2);
-			if (!!_options.endArrow)
+			if (!!_options.endArrow.visible)
 			{
 				g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
@@ -159,7 +169,7 @@ var Connector = function(from, to, options)
 		       	g.lineTo(b.x+ Math.sin( a.alpha - _options.endArrow.angle) * _options.endArrow.size, b.y+Math.cos( a.alpha-_options.endArrow.angle) * _options.endArrow.size);
 		        
 			}
-			if (!!_options.startArrow)
+			if (!!_options.startArrow.visible)
 			{
 				g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       	 	g.beginStroke( selected ? _options.selectedColor :  _options.color);
@@ -215,24 +225,6 @@ var Connector = function(from, to, options)
 		
 
 		},
-		openEditor = function(connector)
-		{
-
-			var editor = $('#connectorEdit');
-			$('input[value="'+_options.color+'"]', editor).prop("checked", true);
-			
-			if (_options.style == 'solid')
-			{
-				$('input[value="solid"]', editor).prop("checked", true);
-			}
-			else
-			{
-				$('input[value="dashed"]', editor).prop("checked", true);
-			}
-			//console.log($('radio[value="'+_options.color+'"]', editor));
-
-			$(editor).data({_object: connector}).modal({show:true, });
-		},
 
 		
 		getMidpoint = function(bounds)
@@ -279,7 +271,7 @@ var Connector = function(from, to, options)
 							}
 						}
 
-						from.registerConnection( _self.id,result.side);
+						from.registerConnection( _self.id,result.side, to);
 						var c = from.getConnectorOrder(_self.id, result.side);
 						var offset = 0;
 
@@ -311,9 +303,28 @@ var Connector = function(from, to, options)
 		{
 			_options.style = style;
 			_options.color =  color;
-			console.log('setStyle');
-			render();
-			requestRedraw();
+
+		},
+		setArrows = function(arrows)
+		{
+			if (arrows == 'from_to')
+			{
+				_options.startArrow.visible = false;
+				_options.endArrow.visible = true;
+				
+			}
+			if (arrows == 'to_from')
+			{
+				
+				_options.startArrow.visible = true;
+				_options.endArrow.visible = false;
+			}
+			if (arrows == 'both')
+			{
+				_options.startArrow.visible = true;
+				_options.endArrow.visible = true;
+			}
+
 		},
 		setupEvents = function()
 		{
@@ -341,7 +352,12 @@ var Connector = function(from, to, options)
 				_self.set({graphics:line(false)});
 				requestRedraw();
 			});	
-			selfDblClickEvent = _self.on('dblclick', function(){ openEditor(_self);});
+			selfDblClickEvent = _self.on('dblclick', function()
+			{ 
+
+		 			var editor = new ConnectorEditor(_self);
+		 			editor.open();
+		 	});
 		};
 
 		_options = $.extend(true, _options, options );
@@ -358,6 +374,8 @@ var Connector = function(from, to, options)
 		_self.className = 'Connector';
 		_self.from = from;
 		_self.to = to;
+		_self.render = render;
+		_self.setArrows = setArrows;
 		_self.calculateConnectionPoint = calculateConnectionPoint;
 		return _self;
 };

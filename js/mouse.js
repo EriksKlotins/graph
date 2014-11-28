@@ -33,7 +33,7 @@ var MouseObject = function(stage)
 			},
 			getConnectorOrder = function()
 			{
-				return {count:1, order:0};
+				return {count:1, order:0, to: 0};
 			},
 			removeConnection = function()
 			{

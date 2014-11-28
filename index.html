@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" type="text/css" href="css/user.css">
@@ -12,14 +12,14 @@
 		{
 			 /* border: 2px solid red; */
 			 display: block;
-			 border: 2px solid red;
+			
 			  background: linear-gradient(white, #b7aea5);
 		}
 		.canvas-wrapper
 		{
 			 /* For Safari 5.1 to 6.0 */
 			overflow: scroll;
-			border: 1px solid red;
+			border: 1px solid gray;
 		}
 	</style>
 </head>
@@ -53,34 +53,65 @@
 	      <div class="modal-body">
 	       <!-- body -->
 	       	<form class="form-horizontal" role="form" onsubmit="javascript:return false;">
-	       		<legend>Connector style</legend>
-				<div class="radio">
-				  <label>
-				    <input type="radio" name="lineType" id="" value="solid" checked>
-				    Solid
-				  </label>
-				</div>
-				<div class="radio">
-				  <label>
-				    <input type="radio" name="lineType" id="" value="dashed">
-				    Dashed
-				  </label>
+	       		<div class="one-third-width">
+		       		<legend>Connector style</legend>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineType" id="" value="solid" checked>
+					    Solid
+					  </label>
+					</div>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineType" id="" value="dashed">
+					    Dashed
+					  </label>
+					</div>
+					<br class="cl">
 				</div>
 
-				<legend>Connector color</legend>
-				<div class="radio">
-				  <label>
-				    <input type="radio" name="lineColor" id="" value="green" checked>
-				    Green
-				  </label>
+
+				<div class="one-third-width">
+					<legend>Connector color</legend>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineColor" id="" value="green" checked>
+					    Green
+					  </label>
+					</div>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineColor" id="" value="red">
+					    Red
+					  </label>
+					</div>
+					<br class="cl">
 				</div>
-				<div class="radio">
-				  <label>
-				    <input type="radio" name="lineColor" id="" value="red">
-				    Red
-				  </label>
+				
+				<div class="one-third-width">
+					<legend>Type</legend>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineArrows" id="" value="from_to" checked>
+					    <i class="fa fa-file-o"></i>&nbsp;<i class="fa fa-long-arrow-right"></i>&nbsp;<i class="fa fa-file-o"></i>
+					  </label>
+					</div>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineArrows" id="" value="to_from">
+					    <i class="fa fa-file-o"></i>&nbsp;<i class="fa fa-long-arrow-left"></i>&nbsp;<i class="fa fa-file-o"></i>
+					  </label>
+					</div>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineArrows" id="" value="both">
+					    <i class="fa fa-file-o"></i>&nbsp;<i class="fa fa-arrows-h"></i>&nbsp;<i class="fa fa-file-o"></i>
+					  </label>
+					</div>
+					<br class="cl">
 				</div>
 			</form>
+			<br class="cl">
 	       <!-- end body -->
 	      </div>
 	      <div class="modal-footer">
@@ -124,7 +155,28 @@
   					</div>
   				</div>
   				<br class="cl">
+  				<div class="">
+  				<legend>Color</legend>
+  					<div class="half-width">
+						<div class="radio">
+						  <label>
+						    <input type="radio" name="color" id="" value="orange" checked>
+						    Orange
+						  </label>
+						</div>
+					</div>
+					<div class="half-width">
 
+						<div class="radio ">
+						  <label>
+						    <input type="radio" name="color" id="" value="blue">
+						    Blue
+						  </label>
+						</div>
+					</div>
+  					<br class="cl">
+  				
+  				</div>
 
 			</form>
 	       <!-- end body -->

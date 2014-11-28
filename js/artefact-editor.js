@@ -6,6 +6,8 @@ window. ArtefactEditor = function(artefact)
 {
 
 	var 
+	orangeBoxColor = '#eaa33e',
+	blueBoxColor = '#008ed0',
 	_editor = $('#artefactEdit'),
 	roleItem = function(id,role)
 	{	
@@ -18,6 +20,7 @@ window. ArtefactEditor = function(artefact)
 	{
 		$('.role-editor.creator .items', _editor).empty();
 		$('.role-editor.user .items', _editor).empty();
+	//	$('input[name="color"]',_editor).off('click');
 		$('#apply', _editor).off('click');
 		$('#delete', _editor).off('click');
 	},
@@ -69,6 +72,20 @@ window. ArtefactEditor = function(artefact)
 				usedBy.push (newRole);
 			}
 		}) ;
+
+		
+		var color =  $('input[name="color"]:checked').val();
+		var c = artefact._options.box.color;
+		if (color == 'orange')
+		{
+			artefact._options.box.color = orangeBoxColor;
+		}
+		else
+		{
+			artefact._options.box.color = blueBoxColor;
+		}
+		
+		
 		
 		artefact.editCreatedBy(createdBy);
 		artefact.editUsedBy(usedBy);
@@ -87,10 +104,15 @@ window. ArtefactEditor = function(artefact)
 	{
 		var 
 			createdBy = artefact.getCreatedBy();
-			usedBy = artefact.getUsedBy();
+			usedBy = artefact.getUsedBy(),
+			c = (artefact._options.box.color == orangeBoxColor? 'orange' : 'blue');
+			
+
+
+
 		reset();
 		$('input[name="title"]', _editor).val(artefact._options.title);
-	
+		$('input[value="'+c+'"]', _editor) .prop('checked',true);
 
 
 

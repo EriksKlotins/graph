@@ -15,9 +15,20 @@ form .half-width
 	float: left;
 }
 form .half-width:last-child
+form .one-third-width:last-child
 {
 	margin-right: 0;
 }
+form .one-third-width
+{
+	min-height: 50px;
+
+
+	width: 30%;
+	margin-right: 3%;
+	float: left;
+}
+
 
 
 br.cl
