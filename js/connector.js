@@ -9,7 +9,7 @@ var Connector = function(from, to, options)
 
 	var
 		_self = new createjs.Shape(),
-
+		_endPoints = { from: null, to:null },
 		_options = 
 		{
 			color: 'green',// '#90837a',
@@ -33,6 +33,13 @@ var Connector = function(from, to, options)
 				line2: {image: null, url:'img/line2.png'}
 	 		}
 		},
+		toRemoveEvent = null,
+		toNeedRedrawEvent = null,
+		fromRemoveEvent = null,
+		fromNeedRedrawEvent = null,
+		selfMouseOverEvent = null,
+		selfMouseOutEvent = null,
+		selfDblClickEvent = null,
 		serialize = function()
 		{
 			return null;
@@ -74,13 +81,15 @@ var Connector = function(from, to, options)
 		
 		line = function(selected)
 		{
+
+			console.log('Connector.line');
 			var g = new createjs.Graphics(),
 			 	a = calculateConnectionPoint(from,to),
 			 	b = calculateConnectionPoint(to,from),// to.getConnectionPoint(from),
 				d = Math.PI/10, qX = 0, qY = 0;
 			
 
-		 
+		 	console.log('from', a.side);
 	  	   g.setStrokeStyle( selected ? _options.selectedWidth :  _options.width);
 	       if (selected)
 	       {
@@ -165,24 +174,46 @@ var Connector = function(from, to, options)
 		render = function()
 		{ 
 			_self.set({graphics:line()});
-	       
 		},
-		updateLine = function(event)
-		{
-			render();
-			
-		},
+		
 		doRemove = function()
 		{
+			
+
 			var e = new createjs.Event("remove");
 	      	e.target = _self;
 	      	_self.dispatchEvent(e);
+	      	_removed = true;
+	      	if (from.off)
+			{
+				console.log('Connector.doRemove');
+				from.off('needRedraw', fromNeedRedrawEvent);
+				from.off('remove', fromRemoveEvent);
+			//	from.on('drop', checkMultipleConnectors);
+			}
+			if (to.on)
+			{
+				to.off('needRedraw', toNeedRedrawEvent);
+				to.off('remove', toRemoveEvent);
+				//to.on('drop', checkMultipleConnectors);
+			} 
+			_self.off('mouseover', selfMouseOverEvent);
+			_self.off('mouseout', selfMouseOutEvent);
+			_self.off('dblclick', selfDblClickEvent);
+
+
+			from.removeConnection(_self.id);
+			to.removeConnection(_self.id);
+			
 		},
 		requestRedraw = function()
 		{
+			
 			var event = new createjs.Event("needRedraw");
 	      	event.target = _self;
 	      	_self.dispatchEvent(event);
+		
+
 		},
 		openEditor = function(connector)
 		{
@@ -229,26 +260,42 @@ var Connector = function(from, to, options)
 						{
 							if (e.y > o.y)
 							{	
-								result = {x: e.x , y: e.y - fromBounds.height/2, side:'bottom' };
+								result = {x: e.x , y: e.y - fromBounds.height/2, side:'top' };
 							}
 							else
 							{
-								result = {x: e.x , y: e.y + fromBounds.height/2 , side:'top' };
+								result = {x: e.x , y: e.y + fromBounds.height/2 , side:'bottom' };
 							}
 						}
 						else
 						{
 							if (e.x> o.x)
 							{
-								result = {x: e.x - fromBounds.width/2, y: e.y, side:'right'  };
+								result = {x: e.x - fromBounds.width/2, y: e.y, side:'left'  };
 							}
 							else
 							{
-								result = {x: e.x + fromBounds.width/2, y: e.y , side:'left' };
+								result = {x: e.x + fromBounds.width/2, y: e.y , side:'right' };
 							}
 						}
 
-					
+						from.registerConnection( _self.id,result.side);
+						var c = from.getConnectorOrder(_self.id, result.side);
+						var offset = 0;
+
+						if (['top', 'bottom'].indexOf(result.side)>= 0)
+						{
+							//result.x += 10*(c.order-1);
+							result.x = fromBounds.x+ fromBounds.width / (c.count+1) * c.order;
+							
+						}
+						else
+						{
+							//result.y += 10*(c.order-1);
+							result.y = fromBounds.y + fromBounds.height / (c.count+1) * c.order;
+						}
+
+						console.log('I am the',c);
 
 						return result;
 
@@ -272,27 +319,29 @@ var Connector = function(from, to, options)
 		{
 			if (from.on)
 			{
-				from.on('needRedraw', updateLine);
-				from.on('remove', doRemove);
+				fromNeedRedrawEvent = from.on('needRedraw',render);
+				fromRemoveEvent = from.on('remove', doRemove);
 			//	from.on('drop', checkMultipleConnectors);
 			}
 			if (to.on)
 			{
-				to.on('needRedraw', updateLine);
-				to.on('remove', doRemove);
+				toNeedRedrawEvent = to.on('needRedraw', render);
+				toRemoveEvent = to.on('remove', doRemove);
 				//to.on('drop', checkMultipleConnectors);
 			} 
-			_self.on('mouseover', function() 
+			selfMouseOverEvent = _self.on('mouseover', function() 
 			{
+				console.log('connector.mouseover');
 				_self.set({graphics:line(true)});
 				requestRedraw();
 			});	
-			_self.on('mouseout', function() 
+			selfMouseOutEvent = _self.on('mouseout', function() 
 			{
+				console.log('connector.mouseout');
 				_self.set({graphics:line(false)});
 				requestRedraw();
 			});	
-			_self.on('dblclick', function(){ openEditor(_self);});
+			selfDblClickEvent = _self.on('dblclick', function(){ openEditor(_self);});
 		};
 
 		_options = $.extend(true, _options, options );
@@ -301,7 +350,7 @@ var Connector = function(from, to, options)
 		render();
 		setupEvents();
 
-		_self.update = updateLine;
+	
 		_self.setStyle = setStyle;
 		_self.requestRedraw = requestRedraw;
 		_self.options = _options;

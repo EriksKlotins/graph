@@ -31,13 +31,17 @@ var MouseObject = function(stage)
 				// _dragging = false;
 				// _draggingObject=null;
 			},
-			connectorAttached = function()
+			getConnectorOrder = function()
+			{
+				return {count:1, order:0};
+			},
+			removeConnection = function()
 			{
 
 			},
-			getConnectors = function()
+			registerConnection = function()
 			{
-				return [];
+
 			},
 			calculateConnectionPoint = function()
 			{
@@ -50,12 +54,13 @@ var MouseObject = function(stage)
 				stage.on('stagemouseup', onMouseUp);
 				stage.enableMouseOver(30);
 			};
+			this.registerConnection = registerConnection;
 			this.getArtefactBounds = getArtefactBounds;
 			this.setDragObject = setDragObject;
 			this.getDragObject = getDragObject;
-			this.getConnectors = getConnectors;
-			this.connectorAttached = connectorAttached;
+			this.removeConnection = removeConnection;
 			this.calculateConnectionPoint = calculateConnectionPoint;
+			this.getConnectorOrder = getConnectorOrder;
 		initialize();
 	};
 

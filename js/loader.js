@@ -38,14 +38,18 @@
 					connector = new Connector(source,  window.Mouse),
 					onMouseMove = function(e)
 					{
+						console.log('Loader.createConnector.onMouseMove()');
 						source.requestRedraw();
 					},
 					onMouseDown = function(e)
 					{
+						console.log('Loader.createConnector.onMouseDown');
 						stage.off('stagemousemove', onMouseMoveEvent);
 						stage.off('stagemousedown', onMouseDownEvent);
 						stage.removeChild(connector);
-						//
+						connector.doRemove();
+						
+
 						setTimeout(function(){
 							window.Mouse.setDragObject(null);
 						},500);
@@ -55,8 +59,12 @@
 					window.Mouse.setDragObject(connector);
 					connector.on('drop', function(e)
 					{
+
 						var from = source,
 							to = e.originalTarget;
+							
+
+
 						if (from !== to)
 						{
 							var tmp = new Connector(from, to);

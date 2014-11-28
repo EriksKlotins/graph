@@ -16,6 +16,7 @@
 			_boxTopOffset = 0,
 			createdBy = [], 
 			usedBy = [],
+			_connectors = [],
 	
 			_options = {
 				title:'Document',
@@ -44,6 +45,7 @@
 			connectionPointsOverlay = new createjs.Shape(),
 			label = new createjs.Text(_options.title, _options.label.font, _options.label.color),
 			
+
 			/*
 				Returns serialized artefact
 			*/
@@ -111,6 +113,7 @@
 			*/
 			doDragging = function(evt)
 		    {
+		    	console.log('doDragging');
 		    	var obj = evt.currentTarget;
 		    	if (!_isDragging)
 		    	{
@@ -175,7 +178,20 @@
 		    	
 		    	requestRedraw();
 		    },
+		    getConnectorOrder = function(id, side)
+		    {
+		    	var count = 0, order = 0;
+		    	for (var i=0;i<_connectors.length;i++)
+		    	{
+		    		if (_connectors[i].side == side) count++;
+		    		if (_connectors[i].id == id)
+		    		{
+		    			order = count;
+		    		}
+		    	}
 
+		    	return {order:order, count: count };
+		    },
 		    /*
 				Handles show/hide of all overalys
 		    */
@@ -192,6 +208,7 @@
 		    */
 		    onDrop = function(event)
     		{
+    			console.log(_connectors);
     			if (_isDragging)
     			{
     				endDragging();
@@ -285,7 +302,7 @@
 			render = function()
 			{
 				i = 0;
-				
+				label.mouseEnabled = false;
 				_self.removeAllChildren();
 				_self.y += _boxTopOffset;
 				label.textAlign = 'center';
@@ -340,6 +357,32 @@
 					connectionPointsOverlay
 				);
 
+			},
+			registerConnection = function(id, side)
+			{
+				//console.log('registerConnection', id);
+				for (var i=0;i<_connectors.length;i++)
+				{
+					if (_connectors[i].id === id)
+					{
+						_connectors[i].side = side;
+						return i;
+					}
+				}
+				_connectors.push({'id': id, side : side});
+				return (_connectors.length-1);
+			},
+			removeConnection = function(id)
+			{
+				//console.log('Artefact.removeConnection', id);
+				for (var i=0;i<_connectors.length;i++)
+				{
+					if (_connectors[i].id === id)
+					{
+						return _connectors.splice(i,1);
+					}
+				}
+				
 			};
 		render();
 		setupEvents();
@@ -355,7 +398,9 @@
 		_self.getUsedBy = function(){return usedBy;};
 		_self._boxTopOffset = _boxTopOffset;
 		_self.doRemove = doRemove;
-
+		_self.registerConnection = registerConnection;
+		_self.removeConnection = removeConnection;
+		_self.getConnectorOrder = getConnectorOrder;
 		
 		return _self;
 	};
