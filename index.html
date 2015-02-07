@@ -2,10 +2,11 @@
 <html>
 <head>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" type="text/css" href="css/user.css">
-	<title>RESTbench</title>
+	<title>REST-bench</title>
 	
 	<style type="text/css">
 		canvas
@@ -27,7 +28,22 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
-				<h1>REST bench</h1>
+				<h2>REST-bench artifact mapping</h2>
+				<p>
+					This simple graphing tool, while still being a prototype, is aimed at supporting the analyst in implementing the process described in <a href="http://www.lmsteiner.com/papers/unterkalmsteiner_2015_jss.pdf" target="_blank"><i>Assessing Requirements Engineering and Software Test Alignment with REST-bench - Five Case Studies</i></a>. While we still suggest to collect the data via handwritten notes and audio recordings, we think that a dedicated drawing tool can reduce the manual work. The artifact map is essential for the discussion and analysis during the collaborative workshop. 
+				</p>
+				<p>
+					This tool is work in progress. It is designed to follow the workflow described in the paper, but it still lacks some features, e.g. saving, exporting/importing, versioning, zooming, optimizing the layout of maps, custom creator and user roles. More advanced features, like automated analysis of dyad structure properties, are planned. If you have any comments, suggestions or need support, please use the contact form below.
+				</p>
+			<h4>Instructions</h4>
+			<p>
+				We assume that you have already collected the necessary data from both the Requirements Engineering (RE) and Software Tester (ST) perspective. Artefacts, users, creators and links are color coded in the map. Items mentioned by the RE perspective are organge, by the ST perspective blue, and by both are colored green.
+				<ul>
+					<li>Start by adding all RE artefacts, users and creators: add an artefact by clicking the button "Add new Artefact". Double click an artifact to change its name and to add creators and users.</li>
+					<li>Create links between artifacts by hovering the mouse over one artifact, choosing the port where the link should start and choosing the artifact where the link should end. Double click a link to change its properies.</li>
+					<li>Add now all ST artifacts, users, creators and links. Indicate those items mentioned by both perspectives (they will be colored green in the map).</li>
+				</ul>
+			</p>
 				<a class="btn btn-default" id="add-new">Add new Artefact</a>
 				<!-- <a class="btn btn-default" id="export">Export</a> -->
 			</div>
