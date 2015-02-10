@@ -20,7 +20,10 @@ var Bubble = function(options)
 				color: '#fcd905',
 			
 			},
-
+			blue:
+			{
+				color:'#008ed0'
+			},
 			green:
 			{
 				color:'green'

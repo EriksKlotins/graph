@@ -18,6 +18,11 @@
 				a.x =  Math.min(window.innerWidth, container.width )/2  + $(w).scrollLeft();
 				a.y = Math.min(window.innerHeight, container.height)/2 + $(w).scrollTop();
 				//console.log(a.x,a.y);
+				//
+				a.x += 100-Math.random()*200;
+				a.y += 100-Math.random()*200;
+
+			//	console.log(stage.children);
 				stage.addChild(a);
 				a.on('needRedraw',updateStage);
 				a.on('newConnector', createConnector);

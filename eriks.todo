@@ -1,8 +1,11 @@
 new tasks:
 
-  ☐ Remove radio buttons from list use interviewee role as default
-  ☐ Create boxes at random position
+  ✔ Remove radio buttons from list use interviewee role as default @done (15-02-10 14:10)
+  ✔ Create boxes at random position @done (15-02-10 13:59)
   ☐ add option for both on interviewee role selection
   ☐ Fix colors at connector editor
-  Default connector color is [from] artefact color
-  disqus
+  ☐ Default connector color is [from] artefact color
+
+  ☐ disqus
+  ☐ Intro popup
+ ☐ colors

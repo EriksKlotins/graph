@@ -8,10 +8,14 @@ window. ArtefactEditor = function(artefact)
 	var 
 	orangeBoxColor = '#eaa33e',
 	blueBoxColor = '#008ed0',
+	greenBoxColor = 'green',
 	_editor = $('#artefactEdit'),
 	roleItem = function(id,role)
 	{	
-		var result = $('<div class="item"><input type="checkbox" name="enable" id="'+id+'" /><label for="'+id+'">'+role.options.title+'</label><div class="style"><input type="radio" value="0" name="style_'+id+'" checked="checked"><input type="radio" value="1" name="style_'+id+'" ></div><br class="cl"/> </div>');
+		//var result = $('<div class="item"><input type="checkbox" name="enable" id="'+id+'" /><label for="'+id+'">'+role.options.title+'</label><div class="style"><input type="radio" value="0" name="style_'+id+'" checked="checked"><input type="radio" value="1" name="style_'+id+'" ></div><br class="cl"/> </div>');
+		var result = $('<div class="item"><input type="checkbox" name="enable" id="'+id+'" /><label for="'+id+'">'+role.options.title+'</label><br class="cl"/> </div>');
+		//<div class="style"><input type="radio" value="0" name="style_'+id+'" checked="checked"><input type="radio" value="1" name="style_'+id+'" ></div>
+		
 		$(result).data('role', role);
 		return result;
 	},
@@ -34,10 +38,12 @@ window. ArtefactEditor = function(artefact)
 	},
 	onApply = function()
 	{
-		console.log('onApply');
+		//console.log('onApply');
 
 		var title = $('input[name="title"]',_editor).val();
 		var createdBy = [], usedBy = [];
+		var color =  $('input[name="color"]:checked').val(); // blue = tester, orange = re engineer
+		
 		
 		artefact.setText(title);
 		
@@ -50,11 +56,11 @@ window. ArtefactEditor = function(artefact)
 			if (enable == 'on')
 			{
 				var 
-					role = $(item).data('role');
+					role = $(item).data('role'),
 					newRole = new Bubble(role.options);
 
 
-				newRole.setStyle(style == '0' ? 'green' : 'orange');
+				newRole.setStyle(color);// style == '0' ? 'green' : 'orange');
 				createdBy.push (newRole);
 				//createdBy.push (role);
 			}
@@ -68,23 +74,29 @@ window. ArtefactEditor = function(artefact)
 			{
 				var role = $(item).data('role'),
 					newRole = new Bubble(role.options);
-				newRole.setStyle(style == '0' ? 'green' : 'orange');
+				newRole.setStyle(color);// newRole.setStyle(style == '0' ? 'green' : 'orange');
 				usedBy.push (newRole);
 			}
 		}) ;
 
 		
-		var color =  $('input[name="color"]:checked').val();
-		var c = artefact._options.box.color;
-		if (color == 'orange')
-		{
-			artefact._options.box.color = orangeBoxColor;
-		}
-		else
-		{
-			artefact._options.box.color = blueBoxColor;
-		}
 		
+		//
+		//
+		var c = artefact._options.box.color;
+		switch(color)
+		{
+			case  'orange':
+				artefact._options.box.color = orangeBoxColor;
+			break;
+			case  'blue':
+				artefact._options.box.color = blueBoxColor;
+			break;
+			case  'green':
+				artefact._options.box.color = greenBoxColor;
+			break;
+		}
+	
 		
 		
 		artefact.editCreatedBy(createdBy);
@@ -103,9 +115,22 @@ window. ArtefactEditor = function(artefact)
 	_initialize = function()
 	{
 		var 
-			createdBy = artefact.getCreatedBy();
-			usedBy = artefact.getUsedBy(),
-			c = (artefact._options.box.color == orangeBoxColor? 'orange' : 'blue');
+			createdBy = artefact.getCreatedBy(),
+			usedBy = artefact.getUsedBy(), c=null;
+
+			switch (artefact._options.box.color)
+			{
+				case orangeBoxColor:
+					c = 'orange';
+				break;
+				case blueBoxColor:
+					c = 'blue';
+				break;
+				case greenBoxColor:
+					c = 'green';
+				break;
+			}
+			
 			
 
 
@@ -127,8 +152,8 @@ window. ArtefactEditor = function(artefact)
 				if (role.options.title == createdBy[j].options.title)
 				{
 					$('input[name="enable"]', creatorRole).attr('checked',true);
-					var style =  createdBy[j].options.style == 'green' ? '0' : '1';
-					$('.style input[value="'+style+'"]' , creatorRole).attr('checked', true);
+					//var style =  createdBy[j].options.style == 'green' ? '0' : '1';
+					//$('.style input[value="'+style+'"]' , creatorRole).attr('checked', true);
 					
 				}
 			}
@@ -138,8 +163,8 @@ window. ArtefactEditor = function(artefact)
 				{
 
 					$('input[name="enable"]', userRole).attr('checked',true);
-					var style =  usedBy[j].options.style == 'green' ? '0' : '1';
-					$('.style input[value="'+style+'"]' , userRole).attr('checked', true);
+				//	var style =  usedBy[j].options.style == 'green' ? '0' : '1';
+				//	$('.style input[value="'+style+'"]' , userRole).attr('checked', true);
 
 				}
 			}

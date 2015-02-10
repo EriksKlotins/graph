@@ -23,11 +23,11 @@ var ConnectorEditor = function(connector)
 
 		if (type == 'solid')
 		{
-			connector.setStyle(color == 'red'? 'red' : 'green','solid');	
+			connector.setStyle(color ,'solid');	
 		}
 		else
 		{
-			connector.setStyle(color == 'red'? 'red' : 'green',color == 'red'? 'line2' : 'line1');
+			connector.setStyle(color,color == 'red'? 'line2' : 'line1');
 		}
 
 		connector.setArrows(arrows);

@@ -361,12 +361,14 @@ var Connector = function(from, to, options)
 		};
 
 		_options = $.extend(true, _options, options );
-
+		_options.color =  from._options.box.color; //default color = from box color
 		preloadAssets();
 		render();
 		setupEvents();
 
-	
+		
+
+
 		_self.setStyle = setStyle;
 		_self.requestRedraw = requestRedraw;
 		_self.options = _options;
