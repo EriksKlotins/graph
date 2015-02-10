@@ -54,17 +54,17 @@
 	       <!-- body -->
 	       	<form class="form-horizontal" role="form" onsubmit="javascript:return false;">
 	       		<div class="one-third-width">
-		       		<legend>Connector style</legend>
+		       		<legend>Connection</legend>
 					<div class="radio">
 					  <label>
 					    <input type="radio" name="lineType" id="" value="solid" checked>
-					    Solid
+					    Link
 					  </label>
 					</div>
 					<div class="radio">
 					  <label>
 					    <input type="radio" name="lineType" id="" value="dashed">
-					    Dashed
+					    Use
 					  </label>
 					</div>
 					<br class="cl">
@@ -72,17 +72,23 @@
 
 
 				<div class="one-third-width">
-					<legend>Connector color</legend>
+					<legend>Mentioned by</legend>
 					<div class="radio">
 					  <label>
 					    <input type="radio" name="lineColor" id="" value="green" checked>
-					    Green
+					    Both
 					  </label>
 					</div>
 					<div class="radio">
 					  <label>
 					    <input type="radio" name="lineColor" id="" value="red">
-					    Red
+					     Tester (Blue)
+					  </label>
+					</div>
+					<div class="radio">
+					  <label>
+					    <input type="radio" name="lineColor" id="" value="red">
+					     Requirements engineer (Orange)
 					  </label>
 					</div>
 					<br class="cl">
@@ -138,30 +144,15 @@
 	       		<div class="form-group">
     				<input type="text" class="form-control" name="title" placeholder="Title of the artefact">
   				</div>
-  				<div class="half-width">
-  					<legend>Creators</legend>
-  					<div class="role-editor creator">
-  						<div class="items">
-	  						
-	  					</div>
-  					</div>
-  				</div>
-  				<div class="half-width">
-  					<legend>Users</legend>
-  					<div class="role-editor user">
-  						<div class="items">
-	  						
-	  					</div>
-  					</div>
-  				</div>
-  				<br class="cl">
-  				<div class="">
-  				<legend>Color</legend>
+
+  				
+  						<div class="">
+  				<legend>Interviewee role mentioning the artefact</legend>
   					<div class="half-width">
 						<div class="radio">
 						  <label>
 						    <input type="radio" name="color" id="" value="orange" checked>
-						    Orange
+						    Requirements engineer
 						  </label>
 						</div>
 					</div>
@@ -170,12 +161,31 @@
 						<div class="radio ">
 						  <label>
 						    <input type="radio" name="color" id="" value="blue">
-						    Blue
+						    Tester
 						  </label>
 						</div>
 					</div>
   					<br class="cl">
   				
+
+  				<div class="half-width">
+  					<legend>Creators <small> of the artefact</small></legend>
+  					<div class="role-editor creator">
+  						<div class="items">
+	  						
+	  					</div>
+  					</div>
+  				</div>
+  				<div class="half-width">
+  					<legend>Users<small> of the artefact</small></legend>
+  					<div class="role-editor user">
+  						<div class="items">
+	  						
+	  					</div>
+  					</div>
+  				</div>
+  				<br class="cl">
+  		
   				</div>
 
 			</form>

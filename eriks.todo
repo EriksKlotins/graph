@@ -1,15 +1,8 @@
-Graph drawing engine:
-    ✔ Add/remove boxes @done (14-10-25 00:34)
-    ✔ connections  @done (14-10-25 00:34)
-    ✔ bubbles dynamically @done (14-10-25 00:34)
-    ☐ Set/edit color
-    ✔ set/edit title @done (14-10-25 00:34)
-    ✔ Edit @done (14-10-25 00:34)
-    ✔ Resize with container @done (14-10-25 00:34)
-    ☐ Bubbles add/remove
-    ☐ save/export
-    ☐ Edit connectors
-User interface
-    ☐ Select theme (bootstrap)
-    ☐ add stuff
-    ☐ legend
+new tasks:
+
+  ☐ Remove radio buttons from list use interviewee role as default
+  ☐ Create boxes at random position
+  ☐ add option for both on interviewee role selection
+  ☐ Fix colors at connector editor
+  Default connector color is [from] artefact color
+  disqus

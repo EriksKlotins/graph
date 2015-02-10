@@ -19,7 +19,7 @@
 			_connectors = [],
 	
 			_options = {
-				title:'Document',
+				title:'Artefact',
 				label:{
 					font: '16px arial', 
 					color: '#1e376d'
