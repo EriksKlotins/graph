@@ -30,7 +30,7 @@
 			<div class="col-md-12">
 	
 				<a class="btn btn-default" id="add-new">Add new Artefact</a>
-				<a class="btn btn-default pull-right" data-toggle="modal" data-target="#intro">Instructions</a>
+				<a class="btn  btn-green btn-default pull-right" data-toggle="modal" data-target="#intro">Instructions</a>
 				<a class="btn btn-default pull-right" data-toggle="modal" data-target="#feedback">Feedback</a>
 				<!-- <a class="btn btn-default" id="export">Export</a> -->
 			</div>
@@ -232,11 +232,11 @@
 			</p>
 			<h4>Instructions</h4>
 			<p>
-				We assume that you have already collected the necessary data from both the Requirements Engineering (RE) and Software Tester (ST) perspective. Artefacts, users, creators and links are color coded in the map. Items mentioned by the RE perspective are organge, by the ST perspective blue, and by both are colored green.
+				We assume that you have already collected the necessary data from both the Requirements Engineering (RE) and Software Tester (ST) perspective. Artefacts, users, creators and links are color coded in the map. Items mentioned by the RE perspective are <span style="color:orange;">orange</span>, by the ST perspective <span style="color:blue;">blue</span>, and by both are colored <span style="color:green;">green</span>.
 				<ul>
 					<li>Start by adding all RE artefacts, users and creators: add an artefact by clicking the button "Add new Artefact". Double click an artifact to change its name and to add creators and users.</li>
 					<li>Create links between artifacts by hovering the mouse over one artifact, choosing the port where the link should start and choosing the artifact where the link should end. Double click a link to change its properies.</li>
-					<li>Add now all ST artifacts, users, creators and links. Indicate those items mentioned by both perspectives (they will be colored green in the map).</li>
+					<li>Add now all ST artifacts, users, creators and links. Indicate those items mentioned by both perspectives (they will be colored <span style="color:green;">green</span> in the map).</li>
 				</ul>
 			</p>
 			
@@ -261,6 +261,7 @@
 	        <h4 class="modal-title" id="">We appreciate your feedback</h4>
 	      </div>
 	      <div class="modal-body">
+
 		 	<div id="disqus_thread"></div>
 		    <script type="text/javascript">
 		        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -277,6 +278,9 @@
        <!-- end body -->
 	      </div>
 	      <div class="modal-footer">
+	          <p class="pull-left">
+	      	You can contact me by email <a href="mailto:mun@bth.se">mun@bth.se</a>
+	      </p>
 	        <button type="button" class="btn btn-primary" id="apply" data-dismiss="modal" >Continue</button>
 	      </div>
 	    </div>
